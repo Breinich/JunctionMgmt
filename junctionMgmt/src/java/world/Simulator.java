@@ -12,6 +12,8 @@ public class Simulator implements Runnable {
 	
 	boolean stopped;
 	
+	private int speed = 1000;
+
 	public Simulator() {
 		stopped = false;
 	}
@@ -23,7 +25,7 @@ public class Simulator implements Runnable {
 		stepTime(true);
 		
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(speed);
 			} 
 		catch (InterruptedException e) {
 			e.printStackTrace();
@@ -45,6 +47,14 @@ public class Simulator implements Runnable {
     	}
 
         JunctionFramework.refresh();
+	}
+	
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
 	}
 
 }
