@@ -1,4 +1,4 @@
-// Agent sample_agent in project junctionMgmt
+// Agent controller in project junctionMgmt
 
 /* Initial beliefs and rules */
 
