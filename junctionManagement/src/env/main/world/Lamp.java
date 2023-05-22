@@ -14,14 +14,14 @@ public class Lamp {
 	public Lamp(Direction d) {
 		place = d;
 		
-		colors = new HashMap<Direction, Color>();
+		colors = new HashMap<>();
 		for(Direction di : Direction.values()) {
 			if(di != place) {
 				colors.put(di, Color.RED);
 			}
 		}
 		
-		vehicles = new ArrayList<Vehicle>();
+		vehicles = new ArrayList<>();
 	}
 	
 	public void step() {
