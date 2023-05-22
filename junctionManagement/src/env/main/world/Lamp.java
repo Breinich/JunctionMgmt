@@ -1,4 +1,4 @@
-package world;
+package main.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;

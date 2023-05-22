@@ -1,14 +1,19 @@
-package junctionframework;
+package main.junctionframework;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import world.Simulator;
+import main.Env;
+import main.world.Simulator;
 
 public class JunctionFramework {
 	
-	static MainFrame mainFrame = null;
-	static Simulator simulator = null;
+	private static MainFrame mainFrame = null;
+	private static Simulator simulator = null;
+
+	private static Env environment = null;
+
+	private JunctionFramework() {}
 	
 	public static void start() {
 		try {
@@ -18,18 +23,17 @@ public class JunctionFramework {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+				 javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
+		simulator = new Simulator();
+
 		mainFrame = new MainFrame(simulator);
 		mainFrame.setVisible(true);
+
+		new Thread(simulator).start();
 	}
 	
 	public static void refresh() {
@@ -39,6 +43,14 @@ public class JunctionFramework {
 	
 	public static Simulator getSimulator() {
 		return simulator;
+	}
+
+	public static void setEnvironment(Env env) {
+		environment = env;
+	}
+
+	public static Env getEnvironment(){
+		return environment;
 	}
 	
 	public static void log(String message) {

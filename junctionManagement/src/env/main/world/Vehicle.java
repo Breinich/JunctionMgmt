@@ -1,4 +1,4 @@
-package world;
+package main.world;
 
 public class Vehicle {
 	private int weight;

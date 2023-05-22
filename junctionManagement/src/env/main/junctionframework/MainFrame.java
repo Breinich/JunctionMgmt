@@ -1,6 +1,10 @@
-package junctionframework;
+package main.junctionframework;
+
+import main.world.Direction;
+import main.world.Simulator;
 
 import javax.swing.JFrame;
+import java.awt.*;
 
 public class MainFrame extends JFrame {
 
@@ -108,9 +112,17 @@ public class MainFrame extends JFrame {
         redLampRightPanel = new javax.swing.JPanel();
         redLampLeftPanel = new javax.swing.JPanel();
 
+        // settings
+        String newVehicleButtonText = "new vehicle";
+        String delaySumLabelText = "delay sum:";
+        String carsSumLabelText = "cars sum:";
+        Font font = new Font("Segoe UI",1,12);
+        Color purpleColor = new java.awt.Color(153, 0, 153);
+        Color orangeColor = new java.awt.Color(255, 153, 0);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        junctionPanel.setBackground(new java.awt.Color(51, 255, 51));
+        junctionPanel.setBackground(Color.GREEN);
         junctionPanel.setPreferredSize(new java.awt.Dimension(260, 260));
 
         javax.swing.GroupLayout junctionPanelLayout = new javax.swing.GroupLayout(junctionPanel);
@@ -124,32 +136,32 @@ public class MainFrame extends JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        redNewVehicleButton.setBackground(new java.awt.Color(255, 0, 0));
-        redNewVehicleButton.setText("new vehicle");
+        redNewVehicleButton.setBackground(Color.RED);
+        redNewVehicleButton.setText(newVehicleButtonText);
         redNewVehicleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 redNewVehicleButtonActionPerformed(evt);
             }
         });
 
-        purpleNewVehicleButton.setBackground(new java.awt.Color(153, 0, 153));
-        purpleNewVehicleButton.setText("new vehicle");
+        purpleNewVehicleButton.setBackground(purpleColor);
+        purpleNewVehicleButton.setText(newVehicleButtonText);
         purpleNewVehicleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 purpleNewVehicleButtonActionPerformed(evt);
             }
         });
 
-        blueNewVehicleButton.setBackground(new java.awt.Color(0, 0, 255));
-        blueNewVehicleButton.setText("new vehicle");
+        blueNewVehicleButton.setBackground(Color.BLUE);
+        blueNewVehicleButton.setText(newVehicleButtonText);
         blueNewVehicleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 blueNewVehicleButtonActionPerformed(evt);
             }
         });
 
-        orangeNewVehicleButton.setBackground(new java.awt.Color(255, 153, 0));
-        orangeNewVehicleButton.setText("new vehicle");
+        orangeNewVehicleButton.setBackground(orangeColor);
+        orangeNewVehicleButton.setText(newVehicleButtonText);
         orangeNewVehicleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 orangeNewVehicleButtonActionPerformed(evt);
@@ -166,10 +178,10 @@ public class MainFrame extends JFrame {
             }
         });
 
-        speedLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        speedLabel.setFont(font); // NOI18N
         speedLabel.setText("Speed");
 
-        redPanel.setBackground(new java.awt.Color(255, 0, 0));
+        redPanel.setBackground(Color.RED);
 
         javax.swing.GroupLayout redPanelLayout = new javax.swing.GroupLayout(redPanel);
         redPanel.setLayout(redPanelLayout);
@@ -182,7 +194,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        bluePanel.setBackground(new java.awt.Color(0, 0, 255));
+        bluePanel.setBackground(Color.BLUE);
 
         javax.swing.GroupLayout bluePanelLayout = new javax.swing.GroupLayout(bluePanel);
         bluePanel.setLayout(bluePanelLayout);
@@ -195,7 +207,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        orangePanel.setBackground(new java.awt.Color(255, 153, 0));
+        orangePanel.setBackground(orangeColor);
 
         javax.swing.GroupLayout orangePanelLayout = new javax.swing.GroupLayout(orangePanel);
         orangePanel.setLayout(orangePanelLayout);
@@ -208,7 +220,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        purplePanel.setBackground(new java.awt.Color(153, 0, 153));
+        purplePanel.setBackground(purpleColor);
 
         javax.swing.GroupLayout purplePanelLayout = new javax.swing.GroupLayout(purplePanel);
         purplePanel.setLayout(purplePanelLayout);
@@ -221,7 +233,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 138, Short.MAX_VALUE)
         );
 
-        stopButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        stopButton.setFont(font); // NOI18N
         stopButton.setText("stop");
         stopButton.setToolTipText("");
         stopButton.addActionListener(new java.awt.event.ActionListener() {
@@ -230,7 +242,7 @@ public class MainFrame extends JFrame {
             }
         });
 
-        startButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        startButton.setFont(font); // NOI18N
         startButton.setText("start");
         startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -238,7 +250,7 @@ public class MainFrame extends JFrame {
             }
         });
 
-        redLampPanel.setBackground(new java.awt.Color(0, 0, 0));
+        redLampPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout redLampPanelLayout = new javax.swing.GroupLayout(redLampPanel);
         redLampPanel.setLayout(redLampPanelLayout);
@@ -251,7 +263,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        orangeLampPanel.setBackground(new java.awt.Color(0, 0, 0));
+        orangeLampPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout orangeLampPanelLayout = new javax.swing.GroupLayout(orangeLampPanel);
         orangeLampPanel.setLayout(orangeLampPanelLayout);
@@ -264,7 +276,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        purpleLampPanel.setBackground(new java.awt.Color(0, 0, 0));
+        purpleLampPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout purpleLampPanelLayout = new javax.swing.GroupLayout(purpleLampPanel);
         purpleLampPanel.setLayout(purpleLampPanelLayout);
@@ -277,7 +289,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        blueLampPanel.setBackground(new java.awt.Color(0, 0, 0));
+        blueLampPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout blueLampPanelLayout = new javax.swing.GroupLayout(blueLampPanel);
         blueLampPanel.setLayout(blueLampPanelLayout);
@@ -291,13 +303,13 @@ public class MainFrame extends JFrame {
         );
 
         redDelayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        redDelayLabel.setText("delay sum:");
+        redDelayLabel.setText(delaySumLabelText);
 
         redDelayValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         redDelayValueLabel.setText("0");
 
         redCarSumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        redCarSumLabel.setText("cars sum:");
+        redCarSumLabel.setText(carsSumLabelText);
 
         redCarSumValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         redCarSumValueLabel.setText("0");
@@ -330,13 +342,13 @@ public class MainFrame extends JFrame {
         );
 
         blueDelayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        blueDelayLabel.setText("delay sum:");
+        blueDelayLabel.setText(delaySumLabelText);
 
         blueDelayValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         blueDelayValueLabel.setText("0");
 
         blueCarSumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        blueCarSumLabel.setText("cars sum:");
+        blueCarSumLabel.setText(carsSumLabelText);
 
         blueCarSumValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         blueCarSumValueLabel.setText("0");
@@ -369,13 +381,13 @@ public class MainFrame extends JFrame {
         );
 
         orangeDelayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        orangeDelayLabel.setText("delay sum:");
+        orangeDelayLabel.setText(delaySumLabelText);
 
         orangeDelayValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         orangeDelayValueLabel.setText("0");
 
         orangeCarSumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        orangeCarSumLabel.setText("cars sum:");
+        orangeCarSumLabel.setText(carsSumLabelText);
 
         orangeCarSumValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         orangeCarSumValueLabel.setText("0");
@@ -408,13 +420,13 @@ public class MainFrame extends JFrame {
         );
 
         purpleDelayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        purpleDelayLabel.setText("delay sum:");
+        purpleDelayLabel.setText(delaySumLabelText);
 
         purpleDelayValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         purpleDelayValueLabel.setText("0");
 
         purpleCarSumLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        purpleCarSumLabel.setText("cars sum:");
+        purpleCarSumLabel.setText(carsSumLabelText);
 
         purpleCarSumValueLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         purpleCarSumValueLabel.setText("0");
@@ -450,7 +462,7 @@ public class MainFrame extends JFrame {
 
         elapsedTimeValue.setText("0");
 
-        blueLampLeftPanel.setBackground(new java.awt.Color(0, 0, 0));
+        blueLampLeftPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout blueLampLeftPanelLayout = new javax.swing.GroupLayout(blueLampLeftPanel);
         blueLampLeftPanel.setLayout(blueLampLeftPanelLayout);
@@ -463,7 +475,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        orangeLampRightPanel.setBackground(new java.awt.Color(0, 0, 0));
+        orangeLampRightPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout orangeLampRightPanelLayout = new javax.swing.GroupLayout(orangeLampRightPanel);
         orangeLampRightPanel.setLayout(orangeLampRightPanelLayout);
@@ -476,7 +488,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        blueLampRightPanel.setBackground(new java.awt.Color(0, 0, 0));
+        blueLampRightPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout blueLampRightPanelLayout = new javax.swing.GroupLayout(blueLampRightPanel);
         blueLampRightPanel.setLayout(blueLampRightPanelLayout);
@@ -489,7 +501,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        purpleLampLeftPanel.setBackground(new java.awt.Color(0, 0, 0));
+        purpleLampLeftPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout purpleLampLeftPanelLayout = new javax.swing.GroupLayout(purpleLampLeftPanel);
         purpleLampLeftPanel.setLayout(purpleLampLeftPanelLayout);
@@ -502,7 +514,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        orangeLampLeftPanel.setBackground(new java.awt.Color(0, 0, 0));
+        orangeLampLeftPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout orangeLampLeftPanelLayout = new javax.swing.GroupLayout(orangeLampLeftPanel);
         orangeLampLeftPanel.setLayout(orangeLampLeftPanelLayout);
@@ -515,7 +527,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        purpleLampRightPanel.setBackground(new java.awt.Color(0, 0, 0));
+        purpleLampRightPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout purpleLampRightPanelLayout = new javax.swing.GroupLayout(purpleLampRightPanel);
         purpleLampRightPanel.setLayout(purpleLampRightPanelLayout);
@@ -528,7 +540,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        redLampRightPanel.setBackground(new java.awt.Color(0, 0, 0));
+        redLampRightPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout redLampRightPanelLayout = new javax.swing.GroupLayout(redLampRightPanel);
         redLampRightPanel.setLayout(redLampRightPanelLayout);
@@ -541,7 +553,7 @@ public class MainFrame extends JFrame {
             .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        redLampLeftPanel.setBackground(new java.awt.Color(0, 0, 0));
+        redLampLeftPanel.setBackground(Color.BLACK);
 
         javax.swing.GroupLayout redLampLeftPanelLayout = new javax.swing.GroupLayout(redLampLeftPanel);
         redLampLeftPanel.setLayout(redLampLeftPanelLayout);

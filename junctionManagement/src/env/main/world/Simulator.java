@@ -1,12 +1,12 @@
-package world;
+package main.world;
 
 import java.util.ArrayList;
 
-import junctionframework.JunctionFramework;
+import main.junctionframework.JunctionFramework;
 
 public class Simulator implements Runnable {
 	
-	ArrayList<Lamp> lamps = new ArrayList<Lamp>();
+	ArrayList<Lamp> lamps = new ArrayList<>();
 	
 	private int time = 0;
 	
@@ -47,6 +47,10 @@ public class Simulator implements Runnable {
     	}
 
         JunctionFramework.refresh();
+	}
+
+	public void changeColor(Direction dir){
+
 	}
 	
 	public int getSpeed() {
