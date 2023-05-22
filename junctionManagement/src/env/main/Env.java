@@ -21,13 +21,13 @@ public class Env extends Environment {
         
         simulator = new Simulator();
 
-        new Thread(simulator);
+        //new Thread(simulator).start();
     }
 
     @Override
     public boolean executeAction(String agName, Structure action) {
-        logger.info("executing: "+action+", but not implemented!");
-        if (true) { // you may improve this condition
+        logger.info("executing: "+agName+"-"+action);
+        if (true) {
              informAgsEnvironmentChanged();
         }
         return true; // the action was executed with success
