@@ -1,61 +1,71 @@
 package main.junctionframework;
 
 import main.world.Direction;
-import main.world.Simulator;
 
 import javax.swing.JFrame;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
 
-	private final Simulator simulator;
 
-	public MainFrame(Simulator simulator) {
-		super("Junction Framework");
-
-		this.simulator = simulator;
+	public MainFrame() {
+		super("Junction Management with Intelligent Traffic Lights");
 		
 		initComponents();
 	}
 
 	public void refresh() {
-		this.repaint();
+		//TODO move cars
+
+
+        //TODO update lamps
+
 
 		//calculate the values
+        redCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.RED).toString());
+        redDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.RED).toString());
+        blueCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.BLUE).toString());
+        blueDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.BLUE).toString());
+        orangeCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.ORANGE).toString());
+        orangeDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.ORANGE).toString());
+        purpleCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.PURPLE).toString());
+        purpleDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.PURPLE).toString());
+
+        elapsedTimeValueLabel.setText(JunctionFramework.getSimulator().getTime().toString());
+
+        this.repaint();
 	}
 
-	private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                    
-        // TODO add your handling code here:
-
-		simulator.addVehicle(Direction.RED);
+	private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {
+		JunctionFramework.getSimulator().addVehicle(Direction.RED);
     }                                                   
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        // TODO add your handling code here:
+        JunctionFramework.getSimulator().stop();
     }                                          
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        // TODO add your handling code here:
+        JunctionFramework.getSimulator().start();
     }                                           
 
     private void purpleNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
-        // TODO add your handling code here:
+        JunctionFramework.getSimulator().addVehicle(Direction.PURPLE);
     }                                                      
 
     private void orangeNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
-        // TODO add your handling code here:
+        JunctionFramework.getSimulator().addVehicle(Direction.ORANGE);
     }                                                      
 
     private void blueNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                     
-        // TODO add your handling code here:
+        JunctionFramework.getSimulator().addVehicle(Direction.BLUE);
     }                                                    
 
-    private void speedSliderCaretPositionChanged(java.awt.event.InputMethodEvent evt) {                                                 
-        // TODO add your handling code here:
+    private void speedSliderCaretPositionChanged() {
+        JunctionFramework.getSimulator().setSpeed(speedSlider.getValue());
     }
 
-    private void greenDurationSliderCaretPositionChanged(java.awt.event.InputMethodEvent evt) {
-        // TODO add your handling code here:
+    private void greenDurationSliderCaretPositionChanged() {
+        JunctionFramework.getSimulator().setGreenDuration(greenDurationSlider.getValue());
     }
 
 
@@ -105,7 +115,7 @@ public class MainFrame extends JFrame {
         purpleCarSumLabel = new javax.swing.JLabel();
         purpleCarSumValueLabel = new javax.swing.JLabel();
         elapsedTimeLabel = new javax.swing.JLabel();
-        elapsedTimeValue = new javax.swing.JLabel();
+        elapsedTimeValueLabel = new javax.swing.JLabel();
         blueLampLeftPanel = new javax.swing.JPanel();
         orangeLampRightPanel = new javax.swing.JPanel();
         blueLampRightPanel = new javax.swing.JPanel();
@@ -161,7 +171,8 @@ public class MainFrame extends JFrame {
         speedSlider.setValue(0);
         speedSlider.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                speedSliderCaretPositionChanged(evt);
+
+                speedSliderCaretPositionChanged();
             }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
             }
@@ -441,7 +452,7 @@ public class MainFrame extends JFrame {
 
         elapsedTimeLabel.setText("Elapsed time:");
 
-        elapsedTimeValue.setText("0");
+        elapsedTimeValueLabel.setText("0");
 
         blueLampLeftPanel.setBackground(Color.BLACK);
 
@@ -558,7 +569,7 @@ public class MainFrame extends JFrame {
         greenDurationSlider.setSnapToTicks(true);
         greenDurationSlider.addInputMethodListener(new java.awt.event.InputMethodListener() {
             public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                greenDurationSliderCaretPositionChanged(evt);
+                greenDurationSliderCaretPositionChanged();
             }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
             }
@@ -577,7 +588,7 @@ public class MainFrame extends JFrame {
                                                 .addGap(0, 0, Short.MAX_VALUE)
                                                 .addComponent(elapsedTimeLabel)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(elapsedTimeValue, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(elapsedTimeValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGap(20, 20, 20)
                                                 .addComponent(orangeInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -655,7 +666,7 @@ public class MainFrame extends JFrame {
                                                 .addGap(7, 7, 7)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                                         .addComponent(elapsedTimeLabel)
-                                                        .addComponent(elapsedTimeValue))
+                                                        .addComponent(elapsedTimeValueLabel))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -739,7 +750,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JButton blueNewVehicleButton;
     private javax.swing.JPanel bluePanel;
     private javax.swing.JLabel elapsedTimeLabel;
-    private javax.swing.JLabel elapsedTimeValue;
+    private javax.swing.JLabel elapsedTimeValueLabel;
     private javax.swing.JLabel greenDurationLabel;
     private javax.swing.JSlider greenDurationSlider;
     private javax.swing.JPanel junctionPanel;
