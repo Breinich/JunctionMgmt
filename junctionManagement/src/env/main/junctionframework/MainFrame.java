@@ -1,9 +1,11 @@
 package main.junctionframework;
 
 import main.world.Direction;
+import main.world.Vehicle;
 
 import javax.swing.JFrame;
 import java.awt.*;
+import java.util.List;
 
 public class MainFrame extends JFrame {
 
@@ -15,8 +17,9 @@ public class MainFrame extends JFrame {
 	}
 
 	public void refresh() {
-		//TODO move cars
-
+        List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
+        if(movingVehicles != null)
+            //TODO move cars
 
         //TODO update lamps
 
@@ -61,7 +64,7 @@ public class MainFrame extends JFrame {
     }                                                    
 
     private void speedSliderCaretPositionChanged() {
-        JunctionFramework.getSimulator().setSpeed(speedSlider.getValue());
+        JunctionFramework.getSimulator().setSpeed(2000-speedSlider.getValue());
     }
 
     private void greenDurationSliderCaretPositionChanged() {
