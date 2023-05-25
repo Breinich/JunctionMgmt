@@ -15,10 +15,7 @@ MAS junctionManagement {
     environment: main.Env
 
     agents:
-        lampBlue;
-        lampRed;
-        lampOrange;
-        lampPurple;
+        trafficLight #4;
         controller;
 
     aslSourcePath: "src/agt";
