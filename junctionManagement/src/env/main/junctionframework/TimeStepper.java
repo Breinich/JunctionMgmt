@@ -5,19 +5,21 @@ import main.world.Simulator;
 public class TimeStepper implements Runnable{
 
     private boolean stopped;
-
     private int speed;
+    private Simulator simulator;
 
-    public TimeStepper(){
+    public TimeStepper(Simulator simulator){
         stopped = false;
         speed = 1000;
+
+        this.simulator = simulator;
     }
 
     public void run() {
 
         while(!stopped)
         {
-            JunctionFramework.stepTime();
+            simulator.stepTime();
 
             try {
                 Thread.sleep(speed);
