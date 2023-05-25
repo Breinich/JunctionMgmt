@@ -2,6 +2,7 @@ package main.junctionframework;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Objects;
 
 import main.Env;
 import main.world.Simulator;
@@ -15,7 +16,7 @@ public class JunctionFramework {
 
 	private JunctionFramework() {}
 	
-	public static void start() {
+	public static void start(Object syncObject) {
 		try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -28,12 +29,10 @@ public class JunctionFramework {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-		simulator = new Simulator();
+		simulator = new Simulator(syncObject);
 
-		mainFrame = new MainFrame(simulator);
+		mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
-
-		new Thread(simulator).start();
 	}
 	
 	public static void refresh() {
