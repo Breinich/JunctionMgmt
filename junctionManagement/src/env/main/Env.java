@@ -26,10 +26,6 @@ public class Env extends Environment {
         public Bid add(Bid other){
             return new Bid(weight + other.weight, count + other.count);
         }
-
-        public boolean isBetterThan(Bid other){
-            return weight > other.weight || (weight == other.weight && count > other.count);
-        }
     }
 
     EnumMap<Direction, String> agentNames = new EnumMap<>(Direction.class);

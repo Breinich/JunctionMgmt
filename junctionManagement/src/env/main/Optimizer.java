@@ -94,6 +94,7 @@ public class Optimizer {
         // find the route with the max gain
         Env.Bid maxGain = new Env.Bid(0, 0);
         int maxGainIndex = 0;
+        int maxGainLength = 0;
 
         for (int i = 0; i < possibleRoutes.size(); i++) {
 
@@ -103,9 +104,12 @@ public class Optimizer {
                     gain = gain.add(newBidMap.get(r));
             }
 
-            if (gain.isBetterThan(maxGain)) {
+            if (gain.weight() > maxGain.weight() ||
+                    (gain.weight() == maxGain.weight() && gain.count() > maxGain.count())  ||
+                    (gain.weight() == maxGain.weight() && gain.count() == maxGain.count() && possibleRoutes.get(i).size() > maxGainLength)) {
                 maxGain = gain;
                 maxGainIndex = i;
+                maxGainLength = possibleRoutes.get(i).size();
             }
         }
 
