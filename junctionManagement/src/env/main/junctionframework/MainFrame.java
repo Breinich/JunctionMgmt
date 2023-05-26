@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
 	public void refresh() {
         List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
         if(movingVehicles != null){}
-            //TODO move cars
+        //TODO move cars
 
         //TODO update lamps
         redLampPurplePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.RED).getColor(Direction.PURPLE));
@@ -75,11 +75,11 @@ public class MainFrame extends JFrame {
         JunctionFramework.getSimulator().addVehicle(Direction.BLUE);
     }                                                    
 
-    private void speedSliderCaretPositionChanged() {
+    private void speedSliderStateChanged() {
         JunctionFramework.getSimulator().setSpeed(2000-speedSlider.getValue());
     }
 
-    private void greenDurationSliderCaretPositionChanged() {
+    private void greenDurationSliderStateChanged() {
         JunctionFramework.getSimulator().setGreenDuration(greenDurationSlider.getValue());
     }
 
@@ -184,14 +184,7 @@ public class MainFrame extends JFrame {
         speedSlider.setPaintTicks(true);
         speedSlider.setSnapToTicks(true);
         speedSlider.setValue(0);
-        speedSlider.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-
-                speedSliderCaretPositionChanged();
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
+        speedSlider.addChangeListener(evt -> speedSliderStateChanged());
 
         speedLabel.setFont(new java.awt.Font("Segoe UI", Font.BOLD, 12)); // NOI18N
         speedLabel.setText("Speed");
@@ -582,13 +575,7 @@ public class MainFrame extends JFrame {
         greenDurationSlider.setMinorTickSpacing(1);
         greenDurationSlider.setPaintTicks(true);
         greenDurationSlider.setSnapToTicks(true);
-        greenDurationSlider.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                greenDurationSliderCaretPositionChanged();
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
+        greenDurationSlider.addChangeListener(evt -> greenDurationSliderStateChanged());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
