@@ -33,10 +33,12 @@ public class TrafficLight {
 	 * Simulates a step of the traffic light
 	 * @return the vehicle that has been released, null if none
 	 */
-	public Vehicle step() {
-		for (Direction dir : Direction.values()) {
-			if(dir != place) {
-				stepColorTransition(dir);
+	public Vehicle step(boolean withColor) {
+		if(withColor) {
+			for (Direction dir : Direction.values()) {
+				if(dir != place) {
+					stepColorTransition(dir);
+				}
 			}
 		}
 
@@ -83,8 +85,8 @@ public class TrafficLight {
 						if (futureColors.get(dir) == LightColor.GREEN)
 							actualColors.put(dir, LightColor.REDYELLOW);
 					}
-					default -> {
-					}
+					default ->
+						stepColorTransition(dir);
 				}
 			}
 		}

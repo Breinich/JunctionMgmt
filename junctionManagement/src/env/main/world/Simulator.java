@@ -57,12 +57,19 @@ public class Simulator {
 				for(TrafficLight l : trafficLights.values())
 					l.changeColor();
 			}
-		}
 
-		for(TrafficLight l : trafficLights.values()){
-			Vehicle v = l.step();
-			if(v != null)
-				vehicleLeaves(v);
+			for(TrafficLight l : trafficLights.values()){
+				Vehicle v = l.step(false);
+				if(v != null)
+					vehicleLeaves(v);
+			}
+		}
+		else{
+			for(TrafficLight l : trafficLights.values()){
+				Vehicle v = l.step(true);
+				if(v != null)
+					vehicleLeaves(v);
+			}
 		}
 
         JunctionFramework.refresh();
