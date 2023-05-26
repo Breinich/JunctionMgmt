@@ -53,6 +53,7 @@ public class Env extends Environment {
         agentNames.put(Direction.PURPLE, "trafficLight4");
         agentDirections.put("trafficLight4", Direction.PURPLE);
         addPercept("trafficLight4",Literal.parseLiteral("color").addTerms(new StringTermImpl("purple")));
+        informAgsEnvironmentChanged();
 
         JunctionFramework.setEnvironment(this);
 
@@ -130,6 +131,7 @@ public class Env extends Environment {
      */
     public void notifyAgentNewBid(Direction direction, int weight, int count){
         addPercept(agentNames.get(direction),Literal.parseLiteral("newBid").addTerms(new NumberTermImpl(weight), new NumberTermImpl(count)));
+        informAgsEnvironmentChanged();
     }
 
 
