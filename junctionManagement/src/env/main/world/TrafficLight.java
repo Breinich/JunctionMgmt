@@ -83,7 +83,8 @@ public class TrafficLight {
 						if (futureColors.get(dir) == LightColor.GREEN)
 							actualColors.put(dir, LightColor.REDYELLOW);
 					}
-					default -> stepColorTransition(dir);
+					default -> {
+					}
 				}
 			}
 		}
