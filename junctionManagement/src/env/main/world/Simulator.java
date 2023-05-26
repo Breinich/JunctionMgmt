@@ -113,7 +113,8 @@ public class Simulator {
 	}
 
 	public void setSpeed(int speed) {
-		timeStepper.setSpeed(speed);
+		if(timeStepper != null)
+			timeStepper.setSpeed(speed);
 	}
 
 	public void stop() {
