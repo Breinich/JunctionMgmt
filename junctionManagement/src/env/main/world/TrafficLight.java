@@ -1,5 +1,6 @@
 package main.world;
 
+import java.awt.*;
 import java.util.EnumMap;
 import java.util.LinkedList;
 
@@ -7,8 +8,8 @@ public class TrafficLight {
 	
 	private Direction place;
 	
-	private EnumMap<Direction, Color> actualColors;
-	private EnumMap<Direction, Color> futureColors;
+	private EnumMap<Direction, LightColor> actualColors;
+	private EnumMap<Direction, LightColor> futureColors;
 
 	private LinkedList<Vehicle> vehicles;
 	
@@ -20,8 +21,8 @@ public class TrafficLight {
 
 		for(Direction di : Direction.values()) {
 			if(di != place) {
-				actualColors.put(di, Color.RED);
-				futureColors.put(di, Color.RED);
+				actualColors.put(di, LightColor.RED);
+				futureColors.put(di, LightColor.RED);
 			}
 		}
 		
@@ -61,8 +62,8 @@ public class TrafficLight {
 	 */
 	private void stepColorTransition(Direction dir){
 		switch (actualColors.get(dir)) {
-			case YELLOW -> actualColors.put(dir, Color.RED);
-			case REDYELLOW -> actualColors.put(dir, Color.GREEN);
+			case YELLOW -> actualColors.put(dir, LightColor.RED);
+			case REDYELLOW -> actualColors.put(dir, LightColor.GREEN);
 			default -> {}
 		}
 	}
@@ -75,12 +76,12 @@ public class TrafficLight {
 			if(dir != place) {
 				switch (actualColors.get(dir)) {
 					case GREEN -> {
-						if (futureColors.get(dir) == Color.RED)
-							actualColors.put(dir, Color.YELLOW);
+						if (futureColors.get(dir) == LightColor.RED)
+							actualColors.put(dir, LightColor.YELLOW);
 					}
 					case RED -> {
-						if (futureColors.get(dir) == Color.GREEN)
-							actualColors.put(dir, Color.REDYELLOW);
+						if (futureColors.get(dir) == LightColor.GREEN)
+							actualColors.put(dir, LightColor.REDYELLOW);
 					}
 					default -> stepColorTransition(dir);
 				}
@@ -93,12 +94,22 @@ public class TrafficLight {
 	 * @param dir the direction of the lamp
 	 * @param c the future color, GREEN or RED
 	 */
-	public void changeFutureColor(Direction dir, Color c) {
+	public void changeFutureColor(Direction dir, LightColor c) {
 		futureColors.put(dir, c);
 	}
 
-	public Color getColor(Direction dir) {
+	public LightColor getLightColor(Direction dir) {
 		return actualColors.get(dir);
+	}
+
+	public Color getColor(Direction dir) {
+		return switch (actualColors.get(dir)) {
+			case GREEN -> Color.GREEN;
+			case YELLOW -> Color.YELLOW;
+			case REDYELLOW -> Color.ORANGE;
+			case RED -> Color.RED;
+			default -> Color.BLACK;
+		};
 	}
 
 	public void addVehicle(Vehicle v) {
@@ -118,5 +129,9 @@ public class TrafficLight {
 		if(vehicles.isEmpty())
 			return null;
 		return vehicles.getFirst().getDestionation();
+	}
+
+	public int getWaitingVehiclesCount() {
+		return vehicles.size();
 	}
 }
