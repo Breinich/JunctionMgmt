@@ -32,8 +32,18 @@ public class Simulator {
 		random = new Random();
 
 		trafficLights = new EnumMap<>(Direction.class);
+		for(Direction d : Direction.values())
+			trafficLights.put(d, new TrafficLight(d));
+
 		carSumByDirection = new EnumMap<>(Direction.class);
+		for (Direction d : Direction.values())
+			carSumByDirection.put(d, 0);
+
 		carAvgWaitingByDirection = new EnumMap<>(Direction.class);
+		for (Direction d : Direction.values())
+			carAvgWaitingByDirection.put(d, 0);
+
+		JunctionFramework.refresh();
 	}
 
 	/**
@@ -66,7 +76,7 @@ public class Simulator {
 		TrafficLight l = trafficLights.get(direction);
 		Direction destination = null;
 		while(destination == null || destination == direction)
-			destination = Direction.values()[random.nextInt(Direction.values().length+1)-1];
+			destination = Direction.values()[random.nextInt(Direction.values().length)];
 
 		Vehicle v = new Vehicle(direction, destination, 1, l);
 
@@ -74,7 +84,7 @@ public class Simulator {
 
 		JunctionFramework.log("Vehicle added to " + direction + " direction");
 
-		JunctionFramework.getEnvironment().notifyAgentNewVehicle(direction);
+		JunctionFramework.getEnvironment().notifyAgentNewBid(direction, l.getWaitingVehiclesWeight(), l.getWaitingVehiclesCount());
 	}
 
 	/**
@@ -86,7 +96,6 @@ public class Simulator {
 
 		Direction direction = vehicle.getFrom();
 		int waitingTime = vehicle.getWaitingTime();
-		int weight = vehicle.getWeight();
 
 		carSumByDirection.put(direction, carSumByDirection.get(direction) + 1);
 		carAvgWaitingByDirection.put(direction,
@@ -95,7 +104,8 @@ public class Simulator {
 
 		JunctionFramework.log("Vehicle left from " + direction + " direction");
 
-		JunctionFramework.getEnvironment().notifyAgentVehicleLeft(direction, weight);
+		JunctionFramework.getEnvironment().notifyAgentNewBid(direction,
+				trafficLights.get(direction).getWaitingVehiclesWeight(), trafficLights.get(direction).getWaitingVehiclesCount());
 	}
 
 	public void setGreenDuration(int value) {
@@ -107,7 +117,8 @@ public class Simulator {
 	}
 
 	public void stop() {
-		timeStepper.stop();
+		if(timeStepper != null)
+			timeStepper.stop();
 	}
 
 	/**
