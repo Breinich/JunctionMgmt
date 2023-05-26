@@ -27,8 +27,18 @@ public class TrafficLight {
 		
 		vehicles = new LinkedList<>();
 	}
-	
+
+	/**
+	 * Simulates a step of the traffic light
+	 * @return the vehicle that has been released, null if none
+	 */
 	public Vehicle step() {
+		for (Direction dir : Direction.values()) {
+			if(dir != place) {
+				stepColorTransition(dir);
+			}
+		}
+
 		if(!vehicles.isEmpty()) {
 			Vehicle ret = null;
 			if(vehicles.getFirst().go()) {
@@ -44,9 +54,38 @@ public class TrafficLight {
 
 		return null;
 	}
-	
+
+	/**
+	 * Executes colorchange for the given direction
+	 * @param dir the direction of the lamp
+	 */
+	private void stepColorTransition(Direction dir){
+		switch (actualColors.get(dir)) {
+			case YELLOW -> actualColors.put(dir, Color.RED);
+			case REDYELLOW -> actualColors.put(dir, Color.GREEN);
+			default -> {}
+		}
+	}
+
+	/**
+	 * Changes the color of the traffic light, to the calculated optimal colors
+	 */
 	public void changeColor() {
-		//TODO change color
+		for(Direction dir : Direction.values()) {
+			if(dir != place) {
+				switch (actualColors.get(dir)) {
+					case GREEN -> {
+						if (futureColors.get(dir) == Color.RED)
+							actualColors.put(dir, Color.YELLOW);
+					}
+					case RED -> {
+						if (futureColors.get(dir) == Color.GREEN)
+							actualColors.put(dir, Color.REDYELLOW);
+					}
+					default -> stepColorTransition(dir);
+				}
+			}
+		}
 	}
 
 	/**
@@ -73,5 +112,11 @@ public class TrafficLight {
 		}
 
 		return sum;
+	}
+
+	public Direction getFirstDestination() {
+		if(vehicles.isEmpty())
+			return null;
+		return vehicles.getFirst().getDestionation();
 	}
 }
