@@ -5,7 +5,7 @@ import jason.NoValueException;
 import jason.asSyntax.*;
 import jason.environment.*;
 import main.junctionframework.JunctionFramework;
-import main.world.Color;
+import main.world.LightColor;
 import main.world.Direction;
 
 import java.util.*;
@@ -47,12 +47,16 @@ public class Env extends Environment {
 
         agentNames.put(Direction.RED, "trafficLight1");
         agentDirections.put("trafficLight1", Direction.RED);
+        addPercept("trafficLight1",Literal.parseLiteral("color").addTerms(new StringTermImpl("red")));
         agentNames.put(Direction.ORANGE, "trafficLight2");
         agentDirections.put("trafficLight2", Direction.ORANGE);
+        addPercept("trafficLight2",Literal.parseLiteral("color").addTerms(new StringTermImpl("orange")));
         agentNames.put(Direction.BLUE, "trafficLight3");
         agentDirections.put("trafficLight3", Direction.BLUE);
+        addPercept("trafficLight3",Literal.parseLiteral("color").addTerms(new StringTermImpl("blue")));
         agentNames.put(Direction.PURPLE, "trafficLight4");
         agentDirections.put("trafficLight4", Direction.PURPLE);
+        addPercept("trafficLight4",Literal.parseLiteral("color").addTerms(new StringTermImpl("purple")));
 
         JunctionFramework.setEnvironment(this);
 
@@ -105,9 +109,9 @@ public class Env extends Environment {
                 for (Direction other : Direction.values()){
                     if (dir != other){
                         if(greens.contains(new Optimizer.Route(dir, other)))
-                            JunctionFramework.getSimulator().getTrafficLight(dir).changeFutureColor(other, Color.GREEN);
+                            JunctionFramework.getSimulator().getTrafficLight(dir).changeFutureColor(other, LightColor.GREEN);
                         else
-                            JunctionFramework.getSimulator().getTrafficLight(dir).changeFutureColor(other, Color.RED);
+                            JunctionFramework.getSimulator().getTrafficLight(dir).changeFutureColor(other, LightColor.RED);
                     }
                 }
             }
@@ -126,20 +130,10 @@ public class Env extends Environment {
 
     /**
      * Notifies the agent that a new vehicle has arrived
-     * @param direction The direction from which the vehicle arrived
+     * @param direction The direction of the traffic light
      */
-    public void notifyAgentNewVehicle(Direction direction){
-        addPercept(agentNames.get(direction),Literal.parseLiteral("newVehicle(1)"));
-    }
-
-
-    /**
-     * Notifies the agent that a vehicle has left
-     * @param direction The direction from which the vehicle left
-     * @param weight The weight of the vehicle that left
-     */
-    public void notifyAgentVehicleLeft(Direction direction, int weight) {
-        addPercept(agentNames.get(direction),Literal.parseLiteral("vehicleLeft("+weight+")"));
+    public void notifyAgentNewBid(Direction direction, int weight, int count){
+        addPercept(agentNames.get(direction),Literal.parseLiteral("newBid").addTerms(new NumberTermImpl(weight), new NumberTermImpl(count)));
     }
 
 
