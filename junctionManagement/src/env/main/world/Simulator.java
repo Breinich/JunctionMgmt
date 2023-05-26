@@ -10,7 +10,7 @@ import main.junctionframework.TimeStepper;
 
 public class Simulator {
 	
-	EnumMap<Direction, TrafficLight> lamps;
+	EnumMap<Direction, TrafficLight> trafficLights;
 	EnumMap<Direction, Integer> carSumByDirection;
 	EnumMap<Direction, Integer> carAvgWaitingByDirection;
 	ArrayList<Vehicle> actualMovingVehicles;
@@ -31,7 +31,7 @@ public class Simulator {
 		this.syncObject = syncObject;
 		random = new Random();
 
-		lamps = new EnumMap<>(Direction.class);
+		trafficLights = new EnumMap<>(Direction.class);
 		carSumByDirection = new EnumMap<>(Direction.class);
 		carAvgWaitingByDirection = new EnumMap<>(Direction.class);
 	}
@@ -44,12 +44,12 @@ public class Simulator {
 		time++;
 		if(time % greenDuration == 0) {
 			synchronized (syncObject) {
-				for(TrafficLight l : lamps.values())
+				for(TrafficLight l : trafficLights.values())
 					l.changeColor();
 			}
 		}
 
-		for(TrafficLight l : lamps.values()){
+		for(TrafficLight l : trafficLights.values()){
 			Vehicle v = l.step();
 			if(v != null)
 				vehicleLeaves(v);
@@ -63,7 +63,7 @@ public class Simulator {
 	 * @param direction the direction the vehicle is coming from
 	 */
 	public void addVehicle(Direction direction) {
-		TrafficLight l = lamps.get(direction);
+		TrafficLight l = trafficLights.get(direction);
 		Direction destination = null;
 		while(destination == null || destination == direction)
 			destination = Direction.values()[random.nextInt(Direction.values().length+1)-1];
@@ -136,5 +136,13 @@ public class Simulator {
 
 	public List<Vehicle> getActualMovingVehicles() {
 		return actualMovingVehicles;
+	}
+
+	public Direction getDestination(Direction direction) {
+		return trafficLights.get(direction).getFirstDestination();
+	}
+
+	public TrafficLight getTrafficLight(Direction dir) {
+		return trafficLights.get(dir);
 	}
 }
