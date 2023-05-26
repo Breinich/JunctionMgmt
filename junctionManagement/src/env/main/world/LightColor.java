@@ -1,5 +1,5 @@
 package main.world;
 
-public enum Color {
+public enum LightColor {
 	RED, YELLOW, GREEN, REDYELLOW
 }
