@@ -48,6 +48,7 @@ public class MainFrame extends JFrame {
 
         elapsedTimeValueLabel.setText(JunctionFramework.getSimulator().getTime().toString());
 
+        this.revalidate();
         this.repaint();
 	}
 
@@ -92,7 +93,7 @@ public class MainFrame extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
-        junctionPanel = new JCard("src/env/main/junctionframework/images/intersection.png");
+        junctionPanel = new JJunction();
         redNewVehicleButton = new javax.swing.JButton();
         purpleNewVehicleButton = new javax.swing.JButton();
         blueNewVehicleButton = new javax.swing.JButton();
@@ -148,7 +149,7 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        junctionPanel.setBackground(Color.green);
+        //junctionPanel.setBackground(Color.green);
         junctionPanel.setPreferredSize(new java.awt.Dimension(260, 260));
 
         javax.swing.GroupLayout junctionPanelLayout = new javax.swing.GroupLayout(junctionPanel);
@@ -755,7 +756,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JLabel elapsedTimeValueLabel;
     private javax.swing.JLabel greenDurationLabel;
     private javax.swing.JSlider greenDurationSlider;
-    private JCard junctionPanel;
+    private JJunction junctionPanel;
     private javax.swing.JLabel orangeCarSumLabel;
     private javax.swing.JLabel orangeCarSumValueLabel;
     private javax.swing.JLabel orangeDelayLabel;
