@@ -4,30 +4,61 @@ import main.world.Direction;
 import main.world.Simulator;
 import main.world.Vehicle;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
 public class MainFrame extends JFrame {
 
+    private MovementStepper movementStepper;
 
 	public MainFrame() {
 		super("Junction Management with Intelligent Traffic Lights");
 		
 		initComponents();
+
+       // movementStepper = new MovementStepper(this);
 	}
 
-    private void calculateRoadCoordinates(JRoad road, Direction direction){
+    public JRoad getJRoad (Direction dir){
+        return switch(dir){
+            case RED -> redPanel;
+            case BLUE -> bluePanel;
+            case ORANGE -> orangePanel;
+            case PURPLE -> purplePanel;
+        };
+    }
+
+    public void calculateRoadCoordinates(JRoad road, Direction direction){
         int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
-        if(numberOfVehicles <= 3){
+        road.removeAllCoordinate();
+
+        int x = 0;
+        int y = 0;
+
             for(int i = 0; i < numberOfVehicles; i++){
-                road.addNewCoordinate(new Coordinate(0+i*50, 0));
+                switch (direction){
+                    case RED -> {
+                        x = 0+i*50;
+                        y = 25;
+                    }
+                    case BLUE -> {
+                        x = 25;
+                        y = 0+i*50;
+                    }
+                    case ORANGE -> {
+                        x = 117-i*50;
+                        y = 25;
+                    }
+                    case PURPLE -> {
+                        x = 25;
+                        y = 138-i*50-50;
+                    }
+                }
+                road.addNewCoordinate(new Coordinate(x, y));
             }
-        }else{
-            for(int i = 0; i < 3; i++){
-                road.addNewCoordinate(new Coordinate(0+i*50, 0));
-            }
-        }
+        revalidate();
+        repaint();
     }
 
     public void refresh() {
@@ -58,22 +89,30 @@ public class MainFrame extends JFrame {
 
         elapsedTimeValueLabel.setText(JunctionFramework.getSimulator().getTime().toString());
 
+        //calculate the coordinates
+        calculateRoadCoordinates(redPanel, Direction.RED);
+        calculateRoadCoordinates(bluePanel, Direction.BLUE);
+        calculateRoadCoordinates(orangePanel, Direction.ORANGE);
+        calculateRoadCoordinates(purplePanel, Direction.PURPLE);
+
+        //TODO ideiglenes
         this.revalidate();
         this.repaint();
 
-        List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
-        if(movingVehicles != null){
-            simulateVehicleMoves(movingVehicles);
-        }
+       // new Thread(movementStepper);
 	}
 
-    private void simulateVehicleMoves(List<Vehicle> movingVehicles) {
+    public JJunction getJunctionPanel(){
+        return junctionPanel;
+    }
 
+    public int getSpeed() {
+        return 2000-speedSlider.getValue();
     }
 
     private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		JunctionFramework.getSimulator().addVehicle(Direction.RED);
-        //calculateRoadCoordinates(redPanel, Direction.RED);
+        calculateRoadCoordinates(redPanel, Direction.RED);
     }                                                   
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
@@ -86,17 +125,17 @@ public class MainFrame extends JFrame {
 
     private void purpleNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         JunctionFramework.getSimulator().addVehicle(Direction.PURPLE);
-        //calculateRoadCoordinates(purplePanel, Direction.PURPLE);
+        calculateRoadCoordinates(purplePanel, Direction.PURPLE);
     }                                                      
 
     private void orangeNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         JunctionFramework.getSimulator().addVehicle(Direction.ORANGE);
-        //calculateRoadCoordinates(orangePanel, Direction.ORANGE);
+        calculateRoadCoordinates(orangePanel, Direction.ORANGE);
     }                                                      
 
     private void blueNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                     
         JunctionFramework.getSimulator().addVehicle(Direction.BLUE);
-        //calculateRoadCoordinates(bluePanel, Direction.BLUE);
+        calculateRoadCoordinates(bluePanel, Direction.BLUE);
     }                                                    
 
     private void speedSliderStateChanged() {
@@ -123,10 +162,10 @@ public class MainFrame extends JFrame {
         orangeNewVehicleButton = new javax.swing.JButton();
         speedSlider = new javax.swing.JSlider();
         speedLabel = new javax.swing.JLabel();
-        redPanel = new JRoad();
-        bluePanel = new JRoad();
-        orangePanel = new JRoad();
-        purplePanel = new JRoad();
+        redPanel = new JRoad("src/env/main/junctionframework/images/carRed.png");
+        bluePanel = new JRoad("src/env/main/junctionframework/images/carBlue.png");
+        orangePanel = new JRoad("src/env/main/junctionframework/images/carOrange.png");
+        purplePanel = new JRoad("src/env/main/junctionframework/images/carPurple.png");
         stopButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
         redLampOrangePanel = new javax.swing.JPanel();
@@ -171,6 +210,7 @@ public class MainFrame extends JFrame {
         String carSumText = "car sum:";
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         //junctionPanel.setBackground(Color.green);
         junctionPanel.setPreferredSize(new java.awt.Dimension(260, 260));
