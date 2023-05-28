@@ -92,7 +92,7 @@ public class MainFrame extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
-        junctionPanel = new javax.swing.JPanel();
+        junctionPanel = new JCard("src/env/main/junctionframework/images/intersection.png");
         redNewVehicleButton = new javax.swing.JButton();
         purpleNewVehicleButton = new javax.swing.JButton();
         blueNewVehicleButton = new javax.swing.JButton();
@@ -148,7 +148,7 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        junctionPanel.setBackground(Color.GREEN);
+        junctionPanel.setBackground(Color.green);
         junctionPanel.setPreferredSize(new java.awt.Dimension(260, 260));
 
         javax.swing.GroupLayout junctionPanelLayout = new javax.swing.GroupLayout(junctionPanel);
@@ -755,7 +755,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JLabel elapsedTimeValueLabel;
     private javax.swing.JLabel greenDurationLabel;
     private javax.swing.JSlider greenDurationSlider;
-    private javax.swing.JPanel junctionPanel;
+    private JCard junctionPanel;
     private javax.swing.JLabel orangeCarSumLabel;
     private javax.swing.JLabel orangeCarSumValueLabel;
     private javax.swing.JLabel orangeDelayLabel;
