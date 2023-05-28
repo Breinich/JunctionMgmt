@@ -1,6 +1,7 @@
 package main.junctionframework;
 
 import main.world.Direction;
+import main.world.Simulator;
 import main.world.Vehicle;
 
 import javax.swing.JFrame;
@@ -16,11 +17,20 @@ public class MainFrame extends JFrame {
 		initComponents();
 	}
 
-	public void refresh() {
-        List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
-        if(movingVehicles != null){}
-        //TODO move cars
+    private void calculateRoadCoordinates(JRoad road, Direction direction){
+        int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
+        if(numberOfVehicles <= 3){
+            for(int i = 0; i < numberOfVehicles; i++){
+                road.addNewCoordinate(new Coordinate(0+i*50, 0));
+            }
+        }else{
+            for(int i = 0; i < 3; i++){
+                road.addNewCoordinate(new Coordinate(0+i*50, 0));
+            }
+        }
+    }
 
+    public void refresh() {
         //TODO update lamps
         redLampPurplePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.RED).getColor(Direction.PURPLE));
         redLampOrangePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.RED).getColor(Direction.ORANGE));
@@ -50,10 +60,20 @@ public class MainFrame extends JFrame {
 
         this.revalidate();
         this.repaint();
+
+        List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
+        if(movingVehicles != null){
+            simulateVehicleMoves(movingVehicles);
+        }
 	}
 
-	private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void simulateVehicleMoves(List<Vehicle> movingVehicles) {
+
+    }
+
+    private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		JunctionFramework.getSimulator().addVehicle(Direction.RED);
+        //calculateRoadCoordinates(redPanel, Direction.RED);
     }                                                   
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
@@ -66,14 +86,17 @@ public class MainFrame extends JFrame {
 
     private void purpleNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         JunctionFramework.getSimulator().addVehicle(Direction.PURPLE);
+        //calculateRoadCoordinates(purplePanel, Direction.PURPLE);
     }                                                      
 
     private void orangeNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         JunctionFramework.getSimulator().addVehicle(Direction.ORANGE);
+        //calculateRoadCoordinates(orangePanel, Direction.ORANGE);
     }                                                      
 
     private void blueNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                     
         JunctionFramework.getSimulator().addVehicle(Direction.BLUE);
+        //calculateRoadCoordinates(bluePanel, Direction.BLUE);
     }                                                    
 
     private void speedSliderStateChanged() {
@@ -100,10 +123,10 @@ public class MainFrame extends JFrame {
         orangeNewVehicleButton = new javax.swing.JButton();
         speedSlider = new javax.swing.JSlider();
         speedLabel = new javax.swing.JLabel();
-        redPanel = new javax.swing.JPanel();
-        bluePanel = new javax.swing.JPanel();
-        orangePanel = new javax.swing.JPanel();
-        purplePanel = new javax.swing.JPanel();
+        redPanel = new JRoad();
+        bluePanel = new JRoad();
+        orangePanel = new JRoad();
+        purplePanel = new JRoad();
         stopButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
         redLampOrangePanel = new javax.swing.JPanel();
@@ -751,7 +774,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JPanel blueLampPurplePanel;
     private javax.swing.JPanel blueLampRedPanel;
     private javax.swing.JButton blueNewVehicleButton;
-    private javax.swing.JPanel bluePanel;
+    private JRoad bluePanel;
     private javax.swing.JLabel elapsedTimeLabel;
     private javax.swing.JLabel elapsedTimeValueLabel;
     private javax.swing.JLabel greenDurationLabel;
@@ -766,7 +789,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JPanel orangeLampRedPanel;
     private javax.swing.JPanel orangeLampBluePanel;
     private javax.swing.JButton orangeNewVehicleButton;
-    private javax.swing.JPanel orangePanel;
+    private JRoad orangePanel;
     private javax.swing.JLabel purpleCarSumLabel;
     private javax.swing.JLabel purpleCarSumValueLabel;
     private javax.swing.JLabel purpleDelayLabel;
@@ -776,7 +799,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JPanel purpleLampBluePanel;
     private javax.swing.JPanel purpleLampOrangePanel;
     private javax.swing.JButton purpleNewVehicleButton;
-    private javax.swing.JPanel purplePanel;
+    private JRoad purplePanel;
     private javax.swing.JLabel redCarSumLabel;
     private javax.swing.JLabel redCarSumValueLabel;
     private javax.swing.JLabel redDelayLabel;
@@ -786,7 +809,7 @@ public class MainFrame extends JFrame {
     private javax.swing.JPanel redLampOrangePanel;
     private javax.swing.JPanel redLampPurplePanel;
     private javax.swing.JButton redNewVehicleButton;
-    private javax.swing.JPanel redPanel;
+    private JRoad redPanel;
     private javax.swing.JLabel speedLabel;
     private javax.swing.JSlider speedSlider;
     private javax.swing.JButton startButton;
