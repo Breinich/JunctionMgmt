@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -12,6 +13,7 @@ public class JJunction extends JPanel{
     private BufferedImage image;
     private final String path;
 
+    private HashMap<Coordinate, BufferedImage> vehicles;
 
     /**
      * Konstruktor.
@@ -20,7 +22,7 @@ public class JJunction extends JPanel{
         super(true);
         this.setPreferredSize(new Dimension(260, 260));
 
-this.path = "src/env/main/junctionframework/images/intersection.png";
+        this.path = "src/env/main/junctionframework/images/intersection.png";
 
         try {
             this.image = ImageIO.read(new File(path));
@@ -30,6 +32,28 @@ this.path = "src/env/main/junctionframework/images/intersection.png";
         }
     }
 
+    public void addVehicle(Coordinate c, String path){
+        BufferedImage img;
+        try {
+            img = ImageIO.read(new File(path));
+        }
+        catch(IOException e)
+        {
+            img = null;
+            System.out.println("Error while loading image: " + path);
+        }
+
+        if(img != null){
+            if(vehicles == null)
+                vehicles = new HashMap<>();
+            vehicles.put(c, img);
+        }
+    }
+
+    public void emptyVehicles(){
+        vehicles.clear();
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -37,5 +61,11 @@ this.path = "src/env/main/junctionframework/images/intersection.png";
         g.drawImage(image, 0, 0, null);
 
         // Draw the cars
+        if(vehicles != null && !vehicles.isEmpty()){
+            for(Coordinate c : vehicles.keySet())
+            {
+                g.drawImage(vehicles.get(c), c.x(), c.y(), null);
+            }
+        }
     }
 }
