@@ -1,5 +1,6 @@
 package main.junctionframework;
 
+import main.world.Direction;
 import main.world.Vehicle;
 
 import javax.imageio.ImageIO;
