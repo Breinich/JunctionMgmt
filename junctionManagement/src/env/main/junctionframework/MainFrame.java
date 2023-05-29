@@ -16,8 +16,6 @@ public class MainFrame extends JFrame {
 		super("Junction Management with Intelligent Traffic Lights");
 		
 		initComponents();
-
-       // movementStepper = new MovementStepper(this);
 	}
 
     public JRoad getJRoad (Direction dir){
@@ -27,6 +25,10 @@ public class MainFrame extends JFrame {
             case ORANGE -> orangePanel;
             case PURPLE -> purplePanel;
         };
+    }
+
+    public void stop(){
+        movementStepper.stop();
     }
 
     public void calculateRoadCoordinates(JRoad road, Direction direction){
@@ -99,7 +101,7 @@ public class MainFrame extends JFrame {
         this.revalidate();
         this.repaint();
 
-       // new Thread(movementStepper);
+        new Thread(movementStepper).start();
 	}
 
     public JJunction getJunctionPanel(){
@@ -107,7 +109,7 @@ public class MainFrame extends JFrame {
     }
 
     public int getSpeed() {
-        return 2000-speedSlider.getValue();
+        return 4000-speedSlider.getValue();
     }
 
     private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -117,6 +119,7 @@ public class MainFrame extends JFrame {
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
         JunctionFramework.getSimulator().stop();
+        stop();
     }                                          
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
@@ -139,7 +142,7 @@ public class MainFrame extends JFrame {
     }                                                    
 
     private void speedSliderStateChanged() {
-        JunctionFramework.getSimulator().setSpeed(2000-speedSlider.getValue());
+        JunctionFramework.getSimulator().setSpeed(4000-speedSlider.getValue());
     }
 
     private void greenDurationSliderStateChanged() {
@@ -154,6 +157,7 @@ public class MainFrame extends JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
+        movementStepper = new MovementStepper(this, 10);
 
         junctionPanel = new JJunction();
         redNewVehicleButton = new javax.swing.JButton();
@@ -242,12 +246,13 @@ public class MainFrame extends JFrame {
         orangeNewVehicleButton.setText(vehicleText);
         orangeNewVehicleButton.addActionListener(this::orangeNewVehicleButtonActionPerformed);
 
+        speedSlider.setMinimum(0);
         speedSlider.setMajorTickSpacing(250);
-        speedSlider.setMaximum(1500);
+        speedSlider.setMaximum(3500);
         speedSlider.setMinorTickSpacing(250);
         speedSlider.setPaintTicks(true);
         speedSlider.setSnapToTicks(true);
-        speedSlider.setValue(0);
+        speedSlider.setValue(3000);
         speedSlider.addChangeListener(evt -> speedSliderStateChanged());
 
         speedLabel.setFont(new java.awt.Font("Segoe UI", Font.BOLD, 12)); // NOI18N

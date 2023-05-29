@@ -1,15 +1,19 @@
 package main.junctionframework;
 
-import main.world.Direction;
 import main.world.Vehicle;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class MovementStepper implements Runnable {
 
     private MainFrame frame;
     private int n;
-    private final int horizontalLongRouteLength = 170;
+    private final int longRouteLength = 170;
+    private boolean stopped = false;
 
     public MovementStepper(MainFrame mF, int n){
         frame = mF;
@@ -21,8 +25,22 @@ public class MovementStepper implements Runnable {
         List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
         if(movingVehicles != null && !movingVehicles.isEmpty()) {
             try {
-                for (int i = 0; i < n; i++) {
-                    frame.getJunctionPanel().emptyVehicles();
+                BufferedImage redCar = null;
+                BufferedImage blueCar = null;
+                BufferedImage orangeCar = null;
+                BufferedImage purpleCar = null;
+                try {
+                    redCar = ImageIO.read(new File("src/env/main/junctionframework/images/carRed.png"));
+                    blueCar = ImageIO.read(new File("src/env/main/junctionframework/images/carBlue.png"));
+                    orangeCar = ImageIO.read(new File("src/env/main/junctionframework/images/carOrange.png"));
+                    purpleCar = ImageIO.read(new File("src/env/main/junctionframework/images/carPurple.png"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                for (int i = 0; i < n && !stopped; i++) {
+                    JJunction junction = frame.getJunctionPanel();
+                    junction.emptyVehicles();
                     //JRoard .empty
 
                     for(Vehicle v : movingVehicles){
@@ -32,10 +50,12 @@ public class MovementStepper implements Runnable {
                                     case BLUE -> {
                                         Coordinate coord;
                                         if(i <= n/2) {
-                                            coord = new Coordinate(259 - 50- i/(n/2)*170, 25);
+                                            coord = new Coordinate(259 - 50- i/(n/2)* longRouteLength, 39);
+                                            junction.addVehicle(coord, redCar);
                                         }
                                         else {
-
+                                            coord = new Coordinate(259 - 50 - longRouteLength, 39+(i-n/2)/(n/2) * longRouteLength);
+                                            junction.addVehicle(coord, purpleCar);
                                         }
                                     }
                                     case ORANGE -> {
@@ -142,11 +162,15 @@ public class MovementStepper implements Runnable {
 
                     frame.repaint();
                     frame.revalidate();
-                    Thread.sleep(frame.getSpeed()/(n));
+                    Thread.sleep(frame.getSpeed()/Math.round(1.5*n));
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stop() {
+        stopped = true;
     }
 }

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -32,26 +33,20 @@ public class JJunction extends JPanel{
         }
     }
 
-    public void addVehicle(Coordinate c, String path){
-        BufferedImage img;
-        try {
-            img = ImageIO.read(new File(path));
-        }
-        catch(IOException e)
-        {
-            img = null;
-            System.out.println("Error while loading image: " + path);
-        }
-
+    public void addVehicle(Coordinate c, BufferedImage img){
         if(img != null){
             if(vehicles == null)
                 vehicles = new HashMap<>();
             vehicles.put(c, img);
         }
+        else{
+            System.out.println("Error while loading image: simulating car");
+        }
     }
 
     public void emptyVehicles(){
-        vehicles.clear();
+        if (vehicles != null)
+            vehicles.clear();
     }
 
 
@@ -62,9 +57,9 @@ public class JJunction extends JPanel{
 
         // Draw the cars
         if(vehicles != null && !vehicles.isEmpty()){
-            for(Coordinate c : vehicles.keySet())
+            for(Map.Entry<Coordinate,BufferedImage> e : vehicles.entrySet())
             {
-                g.drawImage(vehicles.get(c), c.x(), c.y(), null);
+                g.drawImage(e.getValue(), e.getKey().x(), e.getKey().y(), null);
             }
         }
     }
