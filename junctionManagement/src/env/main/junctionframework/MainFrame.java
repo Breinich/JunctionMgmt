@@ -165,6 +165,7 @@ public class MainFrame extends JFrame {
                 }
 
                 int longRouteLength = 170;
+                int shortRouteLength = 40;
 
                 for (int i = 0; i < n && !stopped; i++) {
 
@@ -177,19 +178,28 @@ public class MainFrame extends JFrame {
                                     case BLUE -> {
                                         Coordinate coord;
                                         if(i <= n/2) {
-                                            coord = new Coordinate(259 - 50- i/((n-1)/2)* longRouteLength, 39);
+                                            coord = new Coordinate(259 - 50- i/((n-1)/2)* longRouteLength, shortRouteLength);
                                             junctionPanel.addVehicle(coord, redCar);
                                         }
                                         else {
-                                            coord = new Coordinate(259 - 50 - longRouteLength, Math.toIntExact(39 + Math.round((i - (n-1) / 2.0) / ((n-1) / 2.0) * longRouteLength)));
+                                            coord = new Coordinate(259 - 50 - longRouteLength, shortRouteLength + Math.round((i - (n-1) / 2.0f) / ((n-1) / 2.0f) * longRouteLength));
                                             junctionPanel.addVehicle(coord, purpleCar);
                                         }
                                     }
                                     case ORANGE -> {
-
+                                        Coordinate coord = new Coordinate(259 - 50 - i/(n-1) * longRouteLength, shortRouteLength);
+                                        junctionPanel.addVehicle(coord, redCar);
                                     }
                                     case PURPLE -> {
-
+                                        Coordinate coord;
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(259 - 50 - i/((n-1)/2) * shortRouteLength, shortRouteLength);
+                                            junctionPanel.addVehicle(coord, redCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(259 - 50 - shortRouteLength, shortRouteLength - Math.round((i - (n-1) / 2.0f) / ((n-1) / 2.0f) * shortRouteLength));
+                                            junctionPanel.addVehicle(coord, blueCar);
+                                        }
                                     }
                                 }
                             }
