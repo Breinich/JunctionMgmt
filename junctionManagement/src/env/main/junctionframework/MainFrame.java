@@ -97,7 +97,8 @@ public class MainFrame extends JFrame {
         this.revalidate();
         this.repaint();
 
-        animate(10);
+        // animation resolution
+        animate(50);
 	}
 
     public int getSpeed() {
@@ -166,38 +167,41 @@ public class MainFrame extends JFrame {
 
                 int longRouteLength = 170;
                 int shortRouteLength = 40;
+                int maxLength = 259;
+                int vehicleLength = 50;
 
                 for (int i = 0; i < n && !stopped; i++) {
 
                     junctionPanel.emptyVehicles();
+
+                    Coordinate coord;
 
                     for(Vehicle v : movingVehicles){
                         switch(v.getFrom()){
                             case RED -> {
                                 switch(v.getDestionation()){
                                     case BLUE -> {
-                                        Coordinate coord;
+
                                         if(i <= n/2) {
-                                            coord = new Coordinate(259 - 50- i/((n-1)/2)* longRouteLength, shortRouteLength);
+                                            coord = new Coordinate(Math.round(210 - i/((n-1)/2.0f)* 170), 40);
                                             junctionPanel.addVehicle(coord, redCar);
                                         }
                                         else {
-                                            coord = new Coordinate(259 - 50 - longRouteLength, shortRouteLength + Math.round((i - (n-1) / 2.0f) / ((n-1) / 2.0f) * longRouteLength));
+                                            coord = new Coordinate(40, Math.round(40 + (i - (n - 1) / 2.0f) / ((n - 1) / 2.0f) * 170));
                                             junctionPanel.addVehicle(coord, purpleCar);
                                         }
                                     }
                                     case ORANGE -> {
-                                        Coordinate coord = new Coordinate(259 - 50 - i/(n-1) * longRouteLength, shortRouteLength);
+                                        coord = new Coordinate(Math.round(210 - i / (n - 1.0f) * 210), 40);
                                         junctionPanel.addVehicle(coord, redCar);
                                     }
                                     case PURPLE -> {
-                                        Coordinate coord;
                                         if(i <= n/2) {
-                                            coord = new Coordinate(259 - 50 - i/((n-1)/2) * shortRouteLength, shortRouteLength);
+                                            coord = new Coordinate(Math.round(210 - i / ((n - 1) / 2.0f) * 40), 40);
                                             junctionPanel.addVehicle(coord, redCar);
                                         }
                                         else {
-                                            coord = new Coordinate(259 - 50 - shortRouteLength, shortRouteLength - Math.round((i - (n-1) / 2.0f) / ((n-1) / 2.0f) * shortRouteLength));
+                                            coord = new Coordinate(170, Math.round(40 - (i - (n - 1) / 2.0f) / ((n - 1) / 2.0f) * 40));
                                             junctionPanel.addVehicle(coord, blueCar);
                                         }
                                     }
@@ -206,39 +210,84 @@ public class MainFrame extends JFrame {
                             case BLUE -> {
                                 switch(v.getDestionation()){
                                     case RED -> {
-
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(170, Math.round(210 - (i / ((n - 1) / 2.0f) * 40)));
+                                            junctionPanel.addVehicle(coord, blueCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(Math.round(170 + (i - ((n - 1) / 2.0f)) / ((n - 1) / 2.0f) * 40), 170);
+                                            junctionPanel.addVehicle(coord, orangeCar);
+                                        }
                                     }
                                     case ORANGE -> {
-
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(170, Math.round(210 - (i / ((n - 1) / 2.0f) * 170)));
+                                            junctionPanel.addVehicle(coord, blueCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(Math.round(170 - (i - ((n - 1) / 2.0f)) / ((n - 1) / 2.0f) * 170), 40);
+                                            junctionPanel.addVehicle(coord, redCar);
+                                        }
                                     }
                                     case PURPLE -> {
-
+                                        coord = new Coordinate(170, Math.round(210 - (i / (n - 1.0f)) * 210));
+                                        junctionPanel.addVehicle(coord, blueCar);
                                     }
                                 }
                             }
                             case ORANGE -> {
                                 switch(v.getDestionation()){
                                     case BLUE -> {
-
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(Math.round(i / ((n - 1) / 2.0f) * 40), 170);
+                                            junctionPanel.addVehicle(coord, orangeCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(40, Math.round(170 + (i - ((n - 1) / 2.0f)) / ((n - 1) / 2.0f) * 40));
+                                            junctionPanel.addVehicle(coord, purpleCar);
+                                        }
                                     }
                                     case RED -> {
-
+                                        coord = new Coordinate(Math.round(i / (n - 1.0f) * 210), 170);
+                                        junctionPanel.addVehicle(coord, orangeCar);
                                     }
                                     case PURPLE -> {
-
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(Math.round(i / ((n - 1) / 2.0f) * 170), 170);
+                                            junctionPanel.addVehicle(coord, orangeCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate( 170, Math.round(170 - (i - ((n - 1) / 2.0f)) / ((n - 1) / 2.0f) * 170));
+                                            junctionPanel.addVehicle(coord, blueCar);
+                                        }
                                     }
                                 }
                             }
                             case PURPLE -> {
                                 switch(v.getDestionation()){
                                     case BLUE -> {
-
+                                        coord = new Coordinate(40, Math.round( i / (n - 1.0f) * 210));
+                                        junctionPanel.addVehicle(coord, purpleCar);
                                     }
                                     case ORANGE -> {
-
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(40, Math.round(i / ((n - 1) / 2.0f) * 40));
+                                            junctionPanel.addVehicle(coord, purpleCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(Math.round(40 - (i - ((n - 1) / 2.0f)) / ((n - 1) / 2.0f) * 40), 40);
+                                            junctionPanel.addVehicle(coord, redCar);
+                                        }
                                     }
                                     case RED -> {
-
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(40, Math.round(i / ((n - 1) / 2.0f) * 170));
+                                            junctionPanel.addVehicle(coord, purpleCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(Math.round(40 + (i - ((n - 1) / 2.0f)) / ((n - 1) / 2.0f) * 170), 170);
+                                            junctionPanel.addVehicle(coord, orangeCar);
+                                        }
                                     }
                                 }
                             }
@@ -302,7 +351,7 @@ public class MainFrame extends JFrame {
 
                     junctionPanel.repaint();
                     junctionPanel.revalidate();
-                    Thread.sleep(getSpeed()/Math.round(1.5*n));
+                    Thread.sleep(Math.round(getSpeed()/(1.15*n)));
                 }
 
                 junctionPanel.emptyVehicles();
@@ -406,7 +455,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        //junctionPanel.setBackground(Color.green);
+        junctionPanel.setBackground(Color.GREEN);
         junctionPanel.setPreferredSize(new java.awt.Dimension(260, 260));
 
         javax.swing.GroupLayout junctionPanelLayout = new javax.swing.GroupLayout(junctionPanel);
