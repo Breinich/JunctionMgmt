@@ -1,16 +1,17 @@
 package main.junctionframework;
 
 import main.world.Direction;
-import main.world.Simulator;
 import main.world.Vehicle;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class MainFrame extends JFrame {
-
-    private MovementStepper movementStepper;
 
 	public MainFrame() {
 		super("Junction Management with Intelligent Traffic Lights");
@@ -20,15 +21,11 @@ public class MainFrame extends JFrame {
 
     public JRoad getJRoad (Direction dir){
         return switch(dir){
-            case RED -> redPanel;
-            case BLUE -> bluePanel;
-            case ORANGE -> orangePanel;
-            case PURPLE -> purplePanel;
+            case RED -> redRoad;
+            case BLUE -> blueRoad;
+            case ORANGE -> orangeRoad;
+            case PURPLE -> purpleRoad;
         };
-    }
-
-    public void stop(){
-        movementStepper.stop();
     }
 
     public void calculateRoadCoordinates(JRoad road, Direction direction){
@@ -92,21 +89,16 @@ public class MainFrame extends JFrame {
         elapsedTimeValueLabel.setText(JunctionFramework.getSimulator().getTime().toString());
 
         //calculate the coordinates
-        calculateRoadCoordinates(redPanel, Direction.RED);
-        calculateRoadCoordinates(bluePanel, Direction.BLUE);
-        calculateRoadCoordinates(orangePanel, Direction.ORANGE);
-        calculateRoadCoordinates(purplePanel, Direction.PURPLE);
+        calculateRoadCoordinates(redRoad, Direction.RED);
+        calculateRoadCoordinates(blueRoad, Direction.BLUE);
+        calculateRoadCoordinates(orangeRoad, Direction.ORANGE);
+        calculateRoadCoordinates(purpleRoad, Direction.PURPLE);
 
-        //TODO ideiglenes
         this.revalidate();
         this.repaint();
 
-        new Thread(movementStepper).start();
+        animate(10);
 	}
-
-    public JJunction getJunctionPanel(){
-        return junctionPanel;
-    }
 
     public int getSpeed() {
         return 4000-speedSlider.getValue();
@@ -114,7 +106,7 @@ public class MainFrame extends JFrame {
 
     private void redNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {
 		JunctionFramework.getSimulator().addVehicle(Direction.RED);
-        calculateRoadCoordinates(redPanel, Direction.RED);
+        calculateRoadCoordinates(redRoad, Direction.RED);
     }                                                   
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
@@ -128,17 +120,17 @@ public class MainFrame extends JFrame {
 
     private void purpleNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         JunctionFramework.getSimulator().addVehicle(Direction.PURPLE);
-        calculateRoadCoordinates(purplePanel, Direction.PURPLE);
+        calculateRoadCoordinates(purpleRoad, Direction.PURPLE);
     }                                                      
 
     private void orangeNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                       
         JunctionFramework.getSimulator().addVehicle(Direction.ORANGE);
-        calculateRoadCoordinates(orangePanel, Direction.ORANGE);
+        calculateRoadCoordinates(orangeRoad, Direction.ORANGE);
     }                                                      
 
     private void blueNewVehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                     
         JunctionFramework.getSimulator().addVehicle(Direction.BLUE);
-        calculateRoadCoordinates(bluePanel, Direction.BLUE);
+        calculateRoadCoordinates(blueRoad, Direction.BLUE);
     }                                                    
 
     private void speedSliderStateChanged() {
@@ -150,6 +142,174 @@ public class MainFrame extends JFrame {
     }
 
 
+    private boolean stopped = false;
+
+
+    public void animate(int n) {
+        List<Vehicle> movingVehicles = JunctionFramework.getSimulator().getActualMovingVehicles();
+        if(movingVehicles != null && !movingVehicles.isEmpty()) {
+
+            try {
+
+                BufferedImage redCar = null;
+                BufferedImage blueCar = null;
+                BufferedImage orangeCar = null;
+                BufferedImage purpleCar = null;
+                try {
+                    redCar = ImageIO.read(new File("src/env/main/junctionframework/images/carRed.png"));
+                    blueCar = ImageIO.read(new File("src/env/main/junctionframework/images/carBlue.png"));
+                    orangeCar = ImageIO.read(new File("src/env/main/junctionframework/images/carOrange.png"));
+                    purpleCar = ImageIO.read(new File("src/env/main/junctionframework/images/carPurple.png"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                int longRouteLength = 170;
+
+                for (int i = 0; i < n && !stopped; i++) {
+
+                    junctionPanel.emptyVehicles();
+
+                    for(Vehicle v : movingVehicles){
+                        switch(v.getFrom()){
+                            case RED -> {
+                                switch(v.getDestionation()){
+                                    case BLUE -> {
+                                        Coordinate coord;
+                                        if(i <= n/2) {
+                                            coord = new Coordinate(259 - 50- i/((n-1)/2)* longRouteLength, 39);
+                                            junctionPanel.addVehicle(coord, redCar);
+                                        }
+                                        else {
+                                            coord = new Coordinate(259 - 50 - longRouteLength, Math.toIntExact(39 + Math.round((i - (n-1) / 2.0) / ((n-1) / 2.0) * longRouteLength)));
+                                            junctionPanel.addVehicle(coord, purpleCar);
+                                        }
+                                    }
+                                    case ORANGE -> {
+
+                                    }
+                                    case PURPLE -> {
+
+                                    }
+                                }
+                            }
+                            case BLUE -> {
+                                switch(v.getDestionation()){
+                                    case RED -> {
+
+                                    }
+                                    case ORANGE -> {
+
+                                    }
+                                    case PURPLE -> {
+
+                                    }
+                                }
+                            }
+                            case ORANGE -> {
+                                switch(v.getDestionation()){
+                                    case BLUE -> {
+
+                                    }
+                                    case RED -> {
+
+                                    }
+                                    case PURPLE -> {
+
+                                    }
+                                }
+                            }
+                            case PURPLE -> {
+                                switch(v.getDestionation()){
+                                    case BLUE -> {
+
+                                    }
+                                    case ORANGE -> {
+
+                                    }
+                                    case RED -> {
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    for (Direction direction : Direction.values()) {
+                        int x2 = 0;
+                        int y2 = 0;
+                        int x3 = 0;
+                        int y3 = 0;
+                        switch (direction){
+                            case RED -> {
+                                x2= 50-i*(50/n);
+                                y2= 25;
+                                x3 =100-i*(50/n);
+                                y3 = 25;
+                            }
+                            case BLUE -> {
+                                x2= 25;
+                                y2= 0-i*(50/n);
+                                x3 =25;
+                                y3 = 50-i*(50/n);
+                            }
+                            case ORANGE -> {
+                                x2= (117-50)+i*(50/n);
+                                y2= 25;
+                                x3 =(117-2*50)+i*(50/n);
+                                y3 = 25;
+
+                            }
+                            case PURPLE -> {
+                                y2 = (138-50)+i*(50/n);
+                                x2 = 25;
+                                y3 = (88-50)+i*(50/n);
+                                x3 = 25;
+                            }
+                        }
+                        int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
+
+                        if(numberOfVehicles == 2 ) {
+                            getJRoad(direction).removeAllCoordinate();
+                            getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
+                        } else if(numberOfVehicles > 2){
+                            getJRoad(direction).removeAllCoordinate();
+                            getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
+                            getJRoad(direction).addNewCoordinate(new Coordinate(x3, y3));
+
+                        }
+
+                        if (numberOfVehicles > 3){
+                            calculateRoadCoordinates(getJRoad(direction), direction);
+                        }
+
+                        getJRoad(direction).repaint();
+                        getJRoad(direction).revalidate();
+                    }
+
+
+
+                    junctionPanel.repaint();
+                    junctionPanel.revalidate();
+                    Thread.sleep(getSpeed()/Math.round(1.5*n));
+                }
+
+                junctionPanel.emptyVehicles();
+                junctionPanel.repaint();
+                junctionPanel.revalidate();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stop() {
+        stopped = true;
+    }
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -157,7 +317,27 @@ public class MainFrame extends JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
-        movementStepper = new MovementStepper(this, 10);
+        javax.swing.JLabel blueCarSumLabel;
+        javax.swing.JLabel blueDelayLabel;
+        javax.swing.JPanel blueInfoPanel;
+        javax.swing.JButton blueNewVehicleButton;
+        javax.swing.JLabel elapsedTimeLabel;
+        javax.swing.JLabel greenDurationLabel;
+        javax.swing.JLabel orangeCarSumLabel;
+        javax.swing.JLabel orangeDelayLabel;
+        javax.swing.JPanel orangeInfoPanel;
+        javax.swing.JButton orangeNewVehicleButton;
+        javax.swing.JLabel purpleCarSumLabel;
+        javax.swing.JLabel purpleDelayLabel;
+        javax.swing.JPanel purpleInfoPanel;
+        javax.swing.JButton purpleNewVehicleButton;
+        javax.swing.JLabel redCarSumLabel;
+        javax.swing.JLabel redDelayLabel;
+        javax.swing.JPanel redInfoPanel;
+        javax.swing.JButton redNewVehicleButton;
+        javax.swing.JButton stopButton;
+        javax.swing.JButton startButton;
+        javax.swing.JLabel speedLabel;
 
         junctionPanel = new JJunction();
         redNewVehicleButton = new javax.swing.JButton();
@@ -166,10 +346,10 @@ public class MainFrame extends JFrame {
         orangeNewVehicleButton = new javax.swing.JButton();
         speedSlider = new javax.swing.JSlider();
         speedLabel = new javax.swing.JLabel();
-        redPanel = new JRoad("src/env/main/junctionframework/images/carRed.png");
-        bluePanel = new JRoad("src/env/main/junctionframework/images/carBlue.png");
-        orangePanel = new JRoad("src/env/main/junctionframework/images/carOrange.png");
-        purplePanel = new JRoad("src/env/main/junctionframework/images/carPurple.png");
+        redRoad = new JRoad("src/env/main/junctionframework/images/carRed.png");
+        blueRoad = new JRoad("src/env/main/junctionframework/images/carBlue.png");
+        orangeRoad = new JRoad("src/env/main/junctionframework/images/carOrange.png");
+        purpleRoad = new JRoad("src/env/main/junctionframework/images/carPurple.png");
         stopButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
         redLampOrangePanel = new javax.swing.JPanel();
@@ -258,10 +438,10 @@ public class MainFrame extends JFrame {
         speedLabel.setFont(new java.awt.Font("Segoe UI", Font.BOLD, 12)); // NOI18N
         speedLabel.setText("Speed");
 
-        redPanel.setBackground(Color.RED);
+        redRoad.setBackground(Color.RED);
 
-        javax.swing.GroupLayout redPanelLayout = new javax.swing.GroupLayout(redPanel);
-        redPanel.setLayout(redPanelLayout);
+        javax.swing.GroupLayout redPanelLayout = new javax.swing.GroupLayout(redRoad);
+        redRoad.setLayout(redPanelLayout);
         redPanelLayout.setHorizontalGroup(
                 redPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 191, Short.MAX_VALUE)
@@ -271,10 +451,10 @@ public class MainFrame extends JFrame {
                         .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        bluePanel.setBackground(Color.BLUE);
+        blueRoad.setBackground(Color.BLUE);
 
-        javax.swing.GroupLayout bluePanelLayout = new javax.swing.GroupLayout(bluePanel);
-        bluePanel.setLayout(bluePanelLayout);
+        javax.swing.GroupLayout bluePanelLayout = new javax.swing.GroupLayout(blueRoad);
+        blueRoad.setLayout(bluePanelLayout);
         bluePanelLayout.setHorizontalGroup(
                 bluePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 100, Short.MAX_VALUE)
@@ -284,10 +464,10 @@ public class MainFrame extends JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        orangePanel.setBackground(new java.awt.Color(255, 153, 0));
+        orangeRoad.setBackground(new java.awt.Color(255, 153, 0));
 
-        javax.swing.GroupLayout orangePanelLayout = new javax.swing.GroupLayout(orangePanel);
-        orangePanel.setLayout(orangePanelLayout);
+        javax.swing.GroupLayout orangePanelLayout = new javax.swing.GroupLayout(orangeRoad);
+        orangeRoad.setLayout(orangePanelLayout);
         orangePanelLayout.setHorizontalGroup(
                 orangePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -297,10 +477,10 @@ public class MainFrame extends JFrame {
                         .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        purplePanel.setBackground(new java.awt.Color(153, 0, 153));
+        purpleRoad.setBackground(new java.awt.Color(153, 0, 153));
 
-        javax.swing.GroupLayout purplePanelLayout = new javax.swing.GroupLayout(purplePanel);
-        purplePanel.setLayout(purplePanelLayout);
+        javax.swing.GroupLayout purplePanelLayout = new javax.swing.GroupLayout(purpleRoad);
+        purpleRoad.setLayout(purplePanelLayout);
         purplePanelLayout.setHorizontalGroup(
                 purplePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 100, Short.MAX_VALUE)
@@ -653,7 +833,7 @@ public class MainFrame extends JFrame {
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(orangePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(orangeRoad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(orangeNewVehicleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -673,7 +853,7 @@ public class MainFrame extends JFrame {
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                         .addComponent(purpleNewVehicleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(purplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(purpleRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addGap(18, 18, 18)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addComponent(purpleInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -695,7 +875,7 @@ public class MainFrame extends JFrame {
                                                                         .addComponent(blueLampRedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                         .addGap(18, 18, 18)
                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                .addComponent(bluePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(blueRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addComponent(blueNewVehicleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                 .addComponent(junctionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(18, 18, Short.MAX_VALUE)
@@ -708,7 +888,7 @@ public class MainFrame extends JFrame {
                                                 .addGap(45, 45, 45)
                                                 .addComponent(redInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addComponent(redNewVehicleButton, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
-                                        .addComponent(redPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(redRoad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(greenDurationLabel)
                                         .addComponent(greenDurationSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                                 .addContainerGap())
@@ -748,7 +928,7 @@ public class MainFrame extends JFrame {
                                                                 .addComponent(orangeLampBluePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                         .addComponent(orangeInfoPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(orangePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(orangeRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(orangeNewVehicleButton))
                                         .addGroup(layout.createSequentialGroup()
@@ -772,14 +952,14 @@ public class MainFrame extends JFrame {
                                                                 .addGap(0, 0, Short.MAX_VALUE)
                                                                 .addComponent(purpleNewVehicleButton)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(purplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                .addComponent(purpleRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                         .addComponent(junctionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addComponent(redNewVehicleButton)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(redPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(redRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addGap(4, 4, 4)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                         .addComponent(redInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -799,7 +979,7 @@ public class MainFrame extends JFrame {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                                                 .addComponent(blueInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(bluePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(blueRoad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(blueNewVehicleButton)))
                                 .addContainerGap())
@@ -810,54 +990,54 @@ public class MainFrame extends JFrame {
 
 
     // Variables declaration
-    private javax.swing.JLabel blueCarSumLabel;
+
     private javax.swing.JLabel blueCarSumValueLabel;
-    private javax.swing.JLabel blueDelayLabel;
+
     private javax.swing.JLabel blueDelayValueLabel;
-    private javax.swing.JPanel blueInfoPanel;
+
     private javax.swing.JPanel blueLampOrangePanel;
     private javax.swing.JPanel blueLampPurplePanel;
     private javax.swing.JPanel blueLampRedPanel;
-    private javax.swing.JButton blueNewVehicleButton;
-    private JRoad bluePanel;
-    private javax.swing.JLabel elapsedTimeLabel;
+
+    private JRoad blueRoad;
+
     private javax.swing.JLabel elapsedTimeValueLabel;
-    private javax.swing.JLabel greenDurationLabel;
+
     private javax.swing.JSlider greenDurationSlider;
     private JJunction junctionPanel;
-    private javax.swing.JLabel orangeCarSumLabel;
+
     private javax.swing.JLabel orangeCarSumValueLabel;
-    private javax.swing.JLabel orangeDelayLabel;
+
     private javax.swing.JLabel orangeDelayValueLabel;
-    private javax.swing.JPanel orangeInfoPanel;
+
     private javax.swing.JPanel orangeLampPurplePanel;
     private javax.swing.JPanel orangeLampRedPanel;
     private javax.swing.JPanel orangeLampBluePanel;
-    private javax.swing.JButton orangeNewVehicleButton;
-    private JRoad orangePanel;
-    private javax.swing.JLabel purpleCarSumLabel;
+
+    private JRoad orangeRoad;
+
     private javax.swing.JLabel purpleCarSumValueLabel;
-    private javax.swing.JLabel purpleDelayLabel;
+
     private javax.swing.JLabel purpleDelayValueLabel;
-    private javax.swing.JPanel purpleInfoPanel;
+
     private javax.swing.JPanel purpleLampRedPanel;
     private javax.swing.JPanel purpleLampBluePanel;
     private javax.swing.JPanel purpleLampOrangePanel;
-    private javax.swing.JButton purpleNewVehicleButton;
-    private JRoad purplePanel;
-    private javax.swing.JLabel redCarSumLabel;
+
+    private JRoad purpleRoad;
+
     private javax.swing.JLabel redCarSumValueLabel;
-    private javax.swing.JLabel redDelayLabel;
+
     private javax.swing.JLabel redDelayValueLabel;
-    private javax.swing.JPanel redInfoPanel;
+
     private javax.swing.JPanel redLampBluePanel;
     private javax.swing.JPanel redLampOrangePanel;
     private javax.swing.JPanel redLampPurplePanel;
-    private javax.swing.JButton redNewVehicleButton;
-    private JRoad redPanel;
-    private javax.swing.JLabel speedLabel;
+
+    private JRoad redRoad;
+
     private javax.swing.JSlider speedSlider;
-    private javax.swing.JButton startButton;
-    private javax.swing.JButton stopButton;
+
+
     // End of variables declaration                   
 }
