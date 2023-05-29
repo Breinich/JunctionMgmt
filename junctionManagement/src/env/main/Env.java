@@ -72,7 +72,7 @@ public class Env extends Environment {
         if (action.getFunctor().equals("optimizeLamps")) {
             EnumMap<Direction, Bid> bids = new EnumMap<>(Direction.class);
             try {
-                for (int i = 0; i < 4; i += 3){
+                for (int i = 0; i < 12; i += 3){
 
                     int weight = (int)((NumberTerm)action.getTerm(i)).solve();
                     int count = (int)((NumberTerm)action.getTerm(i+1)).solve();
