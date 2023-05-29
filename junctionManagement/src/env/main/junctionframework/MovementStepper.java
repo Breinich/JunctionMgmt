@@ -1,5 +1,6 @@
 package main.junctionframework;
 
+import main.world.Direction;
 import main.world.Vehicle;
 
 import javax.imageio.ImageIO;
@@ -111,29 +112,52 @@ public class MovementStepper implements Runnable {
 
                     //
 
-                    /*
                     List<Direction> directions = List.of(Direction.RED, Direction.BLUE, Direction.ORANGE, Direction.PURPLE);
                     for (Direction direction : directions) {
-                        int add = 0;
+                        int x2 = 0;
+                        int y2 = 0;
+                        int x3 = 0;
+                        int y3 = 0;
                         switch (direction){
-                            case RED -> add = -i*(50/n);
-                            case BLUE -> add = 1;
-                            case ORANGE -> add = 2;
-                            case PURPLE -> add = 3;
+                            case RED -> {
+                                x2= 50-i*(50/n);
+                                y2= 25;
+                                x3 =100-i*(50/n);
+                                y3 = 25;
+                            }
+                            case BLUE -> {
+                                x2= 25;
+                                y2= 0+i*(50/n);
+                                x3 =25;
+                                y3 = 50+i*(50/n);
+                            }
+                            case ORANGE -> {
+                                x2= 117-i*(50/n);
+                                y2= 25;
+                                x3 =67-i*(50/n);
+                                y3 = 25;
+
+                            }
+                            case PURPLE -> {
+                                y2 = 138-i*(50/n);
+                                x2 = 25;
+                                y3 = 88-i*(50/n);
+                                x3 = 25;
+                            }
                         }
                         int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
                         if(numberOfVehicles ==2 ) {
                                 frame.getJRoad(direction).removeAllCoordinate();
-                                frame.getJRoad(direction).addNewCoordinate(new Coordinate(50-i*(50/n), 25));
+                                frame.getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
                         } else if(numberOfVehicles>2){
                                 frame.getJRoad(direction).removeAllCoordinate();
-                                frame.getJRoad(direction).addNewCoordinate(new Coordinate(100-i*(50/n), 25));
-                                frame.getJRoad(direction).addNewCoordinate(new Coordinate(50-i*(50/n), 25));
+                                frame.getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
+                                frame.getJRoad(direction).addNewCoordinate(new Coordinate(x3, y3));
 
                         } else if (numberOfVehicles>3){
-                            frame.getJRoad(direction).addNewCoordinate(new Coordinate(100, 25));
+                            frame.calculateRoadCoordinates(frame.getJRoad(direction), direction);;
                         }
-                    }*/
+                    }
 
 
 
