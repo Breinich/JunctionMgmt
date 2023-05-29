@@ -149,7 +149,7 @@ public class MovementStepper implements Runnable {
                         if(numberOfVehicles ==2 ) {
                                 frame.getJRoad(direction).removeAllCoordinate();
                                 frame.getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
-                        } else if(numberOfVehicles>2){
+                        } else if(numberOfVehicles == 3){
                                 frame.getJRoad(direction).removeAllCoordinate();
                                 frame.getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
                                 frame.getJRoad(direction).addNewCoordinate(new Coordinate(x3, y3));
