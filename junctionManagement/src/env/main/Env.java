@@ -131,7 +131,7 @@ public class Env extends Environment {
      */
     public void notifyAgentNewBid(Direction direction, int weight, int count){
         addPercept(agentNames.get(direction),Literal.parseLiteral("newBid").addTerms(new NumberTermImpl(weight), new NumberTermImpl(count)));
-        informAgsEnvironmentChanged();
+        informAgsEnvironmentChanged(agentNames.get(direction));
     }
 
 
