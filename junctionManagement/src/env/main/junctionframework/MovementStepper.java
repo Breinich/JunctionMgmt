@@ -127,21 +127,21 @@ public class MovementStepper implements Runnable {
                             }
                             case BLUE -> {
                                 x2= 25;
-                                y2= 0+i*(50/n);
+                                y2= 0-i*(50/n);
                                 x3 =25;
-                                y3 = 50+i*(50/n);
+                                y3 = 50-i*(50/n);
                             }
                             case ORANGE -> {
-                                x2= 117-i*(50/n);
+                                x2= (117-50)+i*(50/n);
                                 y2= 25;
-                                x3 =67-i*(50/n);
+                                x3 =(117-2*50)+i*(50/n);
                                 y3 = 25;
 
                             }
                             case PURPLE -> {
-                                y2 = 138-i*(50/n);
+                                y2 = (138-50)+i*(50/n);
                                 x2 = 25;
-                                y3 = 88-i*(50/n);
+                                y3 = (88-50)+i*(50/n);
                                 x3 = 25;
                             }
                         }
