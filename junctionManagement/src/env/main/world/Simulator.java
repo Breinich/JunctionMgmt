@@ -43,6 +43,8 @@ public class Simulator {
 		for (Direction d : Direction.values())
 			carAvgWaitingByDirection.put(d, 0);
 
+		actualMovingVehicles = new ArrayList<>();
+
 		JunctionFramework.refresh();
 	}
 
@@ -50,7 +52,7 @@ public class Simulator {
 	 * Simulate one step of the simulation
 	 */
 	public void stepTime() {
-		actualMovingVehicles = new ArrayList<>();
+		actualMovingVehicles.clear();
 		time++;
 		if(time % greenDuration == 0) {
 			synchronized (syncObject) {
@@ -73,6 +75,8 @@ public class Simulator {
 		}
 
         JunctionFramework.refresh();
+		for(Direction d : Direction.values())
+			JunctionFramework.getEnvironment().notifyAgentNewBid(d, trafficLights.get(d).getWaitingVehiclesWeight(), trafficLights.get(d).getWaitingVehiclesCount());
 	}
 
 	/**
@@ -110,9 +114,6 @@ public class Simulator {
 						carSumByDirection.get(direction));
 
 		JunctionFramework.log("Vehicle left from " + direction + " direction");
-
-		JunctionFramework.getEnvironment().notifyAgentNewBid(direction,
-				trafficLights.get(direction).getWaitingVehiclesWeight(), trafficLights.get(direction).getWaitingVehiclesCount());
 	}
 
 	public void setGreenDuration(int value) {
