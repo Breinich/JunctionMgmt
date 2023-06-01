@@ -65,7 +65,7 @@ public class MainFrame extends JFrame {
         for(int i = 0; i < numberOfVehicles; i++){
             road.addNewCoordinate(getCoordinateOfCar(direction, i));
         }
-        
+
         revalidate();
         repaint();
     }
@@ -200,7 +200,8 @@ public class MainFrame extends JFrame {
         stop();
     }                                          
 
-    private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        stopped = false;
         JunctionFramework.getSimulator().start();
     }                                           
 

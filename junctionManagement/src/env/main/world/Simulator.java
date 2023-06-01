@@ -137,6 +137,8 @@ public class Simulator {
 		if(timeStepper != null)
 			timeStepper.stop();
 
+		stopped = false;
+
 		timeStepper = new TimeStepper(this);
 
 		new Thread(timeStepper).start();
