@@ -1,6 +1,7 @@
 package main.junctionframework;
 
 import main.world.Direction;
+import main.world.LightColor;
 import main.world.Vehicle;
 
 import javax.imageio.ImageIO;
@@ -9,6 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.List;
 
 public class MainFrame extends JFrame {
@@ -19,7 +21,7 @@ public class MainFrame extends JFrame {
 		initComponents();
 	}
 
-    public JRoad getJRoad (Direction dir){
+    private JRoad getJRoad (Direction dir){
         return switch(dir){
             case RED -> redRoad;
             case BLUE -> blueRoad;
@@ -28,7 +30,7 @@ public class MainFrame extends JFrame {
         };
     }
 
-    public void calculateRoadCoordinates(JRoad road, Direction direction){
+    private void calculateRoadCoordinates(JRoad road, Direction direction){
         int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
         road.removeAllCoordinate();
 
@@ -60,20 +62,95 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
+    private JLight getJLight(Direction from, Direction to){
+        return switch(from){
+            case RED -> switch(to){
+                case BLUE -> redLampBlueLight;
+                case ORANGE -> redLampOrangeLight;
+                case PURPLE -> redLampPurpleLight;
+                default -> null;
+            };
+            case BLUE -> switch(to){
+                case RED -> blueLampRedLight;
+                case ORANGE -> blueLampOrangeLight;
+                case PURPLE -> blueLampPurpleLight;
+                default -> null;
+            };
+            case ORANGE -> switch(to){
+                case RED -> orangeLampRedLight;
+                case BLUE -> orangeLampBlueLight;
+                case PURPLE -> orangeLampPurpleLight;
+                default -> null;
+            };
+            case PURPLE -> switch(to){
+                case RED -> purpleLampRedLight;
+                case BLUE -> purpleLampBlueLight;
+                case ORANGE -> purpleLampOrangeLight;
+                default -> null;
+            };
+        };
+    }
+
+    private BufferedImage loadLight(Direction from, Direction to, LightColor color){
+        switch(color) {
+            case RED -> {
+                return lightImages.get(LightDirection.RED);
+            }
+            case YELLOW -> {
+                return lightImages.get(LightDirection.YELLOW);
+            }
+            case REDYELLOW -> {
+                return lightImages.get(LightDirection.REDYELLOW);
+            }
+            case GREEN -> {
+                switch (from){
+                    case RED -> {
+                        return switch (to){
+                            case BLUE -> lightImages.get(LightDirection.GREENDOWN);
+                            case ORANGE -> lightImages.get(LightDirection.GREENLEFT);
+                            case PURPLE -> lightImages.get(LightDirection.GREENUP);
+                            case RED -> lightImages.get(LightDirection.BLACK);
+                        };
+                    }
+                    case BLUE -> {
+                        return switch (to){
+                            case RED -> lightImages.get(LightDirection.GREENRIGHT);
+                            case ORANGE -> lightImages.get(LightDirection.GREENLEFT);
+                            case PURPLE -> lightImages.get(LightDirection.GREENUP);
+                            case BLUE -> lightImages.get(LightDirection.BLACK);
+                        };
+                    }
+                    case ORANGE -> {
+                        return switch (to){
+                            case RED -> lightImages.get(LightDirection.GREENRIGHT);
+                            case BLUE -> lightImages.get(LightDirection.GREENDOWN);
+                            case PURPLE -> lightImages.get(LightDirection.GREENUP);
+                            case ORANGE -> lightImages.get(LightDirection.BLACK);
+                        };
+                    }
+                    case PURPLE -> {
+                        return switch (to){
+                            case RED -> lightImages.get(LightDirection.GREENRIGHT);
+                            case BLUE -> lightImages.get(LightDirection.GREENDOWN);
+                            case ORANGE -> lightImages.get(LightDirection.GREENLEFT);
+                            case PURPLE -> lightImages.get(LightDirection.BLACK);
+                        };
+                    }
+                }
+            }
+        }
+        return lightImages.get(LightDirection.BLACK);
+    }
+
     public void refresh() {
         //TODO update lamps
-        redLampPurplePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.RED).getColor(Direction.PURPLE));
-        redLampOrangePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.RED).getColor(Direction.ORANGE));
-        redLampBluePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.RED).getColor(Direction.BLUE));
-        blueLampPurplePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.BLUE).getColor(Direction.PURPLE));
-        blueLampOrangePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.BLUE).getColor(Direction.ORANGE));
-        blueLampRedPanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.BLUE).getColor(Direction.RED));
-        orangeLampPurplePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.ORANGE).getColor(Direction.PURPLE));
-        orangeLampRedPanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.ORANGE).getColor(Direction.RED));
-        orangeLampBluePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.ORANGE).getColor(Direction.BLUE));
-        purpleLampRedPanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.PURPLE).getColor(Direction.RED));
-        purpleLampOrangePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.PURPLE).getColor(Direction.ORANGE));
-        purpleLampBluePanel.setBackground(JunctionFramework.getSimulator().getTrafficLight(Direction.PURPLE).getColor(Direction.BLUE));
+        for(Direction from : Direction.values()){
+            for(Direction to : Direction.values()){
+                if(from != to){
+                    getJLight(from, to).setColor(loadLight(from, to, JunctionFramework.getSimulator().getTrafficLight(from).getColor(to)));
+                }
+            }
+        }
 
 
 		//calculate the values
@@ -151,20 +228,6 @@ public class MainFrame extends JFrame {
         if(movingVehicles != null && !movingVehicles.isEmpty()) {
 
             try {
-
-                BufferedImage redCar = null;
-                BufferedImage blueCar = null;
-                BufferedImage orangeCar = null;
-                BufferedImage purpleCar = null;
-                try {
-                    redCar = ImageIO.read(new File("src/env/main/junctionframework/images/carRed.png"));
-                    blueCar = ImageIO.read(new File("src/env/main/junctionframework/images/carBlue.png"));
-                    orangeCar = ImageIO.read(new File("src/env/main/junctionframework/images/carOrange.png"));
-                    purpleCar = ImageIO.read(new File("src/env/main/junctionframework/images/carPurple.png"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 int longRouteLength = 170;
                 int shortRouteLength = 40;
                 int maxLength = 259;
@@ -368,6 +431,15 @@ public class MainFrame extends JFrame {
         stopped = true;
     }
 
+    private BufferedImage loadImage(String path) {
+        try {
+            return ImageIO.read(new File(path));
+        } catch (IOException e) {
+            System.out.println("Error while loading image: " + path);
+        }
+        return null;
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -411,10 +483,10 @@ public class MainFrame extends JFrame {
         purpleRoad = new JRoad("src/env/main/junctionframework/images/carPurple.png");
         stopButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
-        redLampOrangePanel = new javax.swing.JPanel();
-        orangeLampRedPanel = new javax.swing.JPanel();
-        purpleLampBluePanel = new javax.swing.JPanel();
-        blueLampPurplePanel = new javax.swing.JPanel();
+        redLampOrangeLight = new JLight();
+        orangeLampRedLight = new JLight();
+        purpleLampBlueLight = new JLight();
+        blueLampPurpleLight = new JLight();
         redInfoPanel = new javax.swing.JPanel();
         redDelayLabel = new javax.swing.JLabel();
         redDelayValueLabel = new javax.swing.JLabel();
@@ -437,16 +509,40 @@ public class MainFrame extends JFrame {
         purpleCarSumValueLabel = new javax.swing.JLabel();
         elapsedTimeLabel = new javax.swing.JLabel();
         elapsedTimeValueLabel = new javax.swing.JLabel();
-        blueLampOrangePanel = new javax.swing.JPanel();
-        orangeLampBluePanel = new javax.swing.JPanel();
-        blueLampRedPanel = new javax.swing.JPanel();
-        purpleLampRedPanel = new javax.swing.JPanel();
-        orangeLampPurplePanel = new javax.swing.JPanel();
-        purpleLampOrangePanel = new javax.swing.JPanel();
-        redLampPurplePanel = new javax.swing.JPanel();
-        redLampBluePanel = new javax.swing.JPanel();
+        blueLampOrangeLight = new JLight();
+        orangeLampBlueLight = new JLight();
+        blueLampRedLight = new JLight();
+        purpleLampRedLight = new JLight();
+        orangeLampPurpleLight = new JLight();
+        purpleLampOrangeLight = new JLight();
+        redLampPurpleLight = new JLight();
+        redLampBlueLight = new JLight();
         greenDurationLabel = new javax.swing.JLabel();
         greenDurationSlider = new javax.swing.JSlider();
+
+        lightImages = new EnumMap<>(LightDirection.class);
+        lightImages.put(LightDirection.RED, loadImage("src/env/main/junctionframework/images/red.png"));
+        lightImages.put(LightDirection.REDYELLOW, loadImage("src/env/main/junctionframework/images/redYellow.png"));
+        lightImages.put(LightDirection.GREENUP, loadImage("src/env/main/junctionframework/images/greenUp.png"));
+        lightImages.put(LightDirection.GREENDOWN, loadImage("src/env/main/junctionframework/images/greenDown.png"));
+        lightImages.put(LightDirection.GREENLEFT, loadImage("src/env/main/junctionframework/images/greenLeft.png"));
+        lightImages.put(LightDirection.GREENRIGHT, loadImage("src/env/main/junctionframework/images/greenRight.png"));
+        lightImages.put(LightDirection.YELLOW, loadImage("src/env/main/junctionframework/images/yellow.png"));
+        lightImages.put(LightDirection.BLACK, loadImage("src/env/main/junctionframework/images/black.png"));
+
+
+        redCar = null;
+        blueCar = null;
+        orangeCar = null;
+        purpleCar = null;
+        try {
+            redCar = ImageIO.read(new File("src/env/main/junctionframework/images/carRed.png"));
+            blueCar = ImageIO.read(new File("src/env/main/junctionframework/images/carBlue.png"));
+            orangeCar = ImageIO.read(new File("src/env/main/junctionframework/images/carOrange.png"));
+            purpleCar = ImageIO.read(new File("src/env/main/junctionframework/images/carPurple.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String vehicleText = "New Vehicle";
         String delayText = "delay avg:";
@@ -454,9 +550,6 @@ public class MainFrame extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
-
-        junctionPanel.setBackground(Color.GREEN);
-        junctionPanel.setPreferredSize(new java.awt.Dimension(260, 260));
 
         javax.swing.GroupLayout junctionPanelLayout = new javax.swing.GroupLayout(junctionPanel);
         junctionPanel.setLayout(junctionPanelLayout);
@@ -558,10 +651,8 @@ public class MainFrame extends JFrame {
         startButton.setText("start");
         startButton.addActionListener(this::startButtonActionPerformed);
 
-        redLampOrangePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout redLampPanelLayout = new javax.swing.GroupLayout(redLampOrangePanel);
-        redLampOrangePanel.setLayout(redLampPanelLayout);
+        javax.swing.GroupLayout redLampPanelLayout = new javax.swing.GroupLayout(redLampOrangeLight);
+        redLampOrangeLight.setLayout(redLampPanelLayout);
         redLampPanelLayout.setHorizontalGroup(
                 redLampPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -571,10 +662,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        orangeLampRedPanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout orangeLampPanelLayout = new javax.swing.GroupLayout(orangeLampRedPanel);
-        orangeLampRedPanel.setLayout(orangeLampPanelLayout);
+        javax.swing.GroupLayout orangeLampPanelLayout = new javax.swing.GroupLayout(orangeLampRedLight);
+        orangeLampRedLight.setLayout(orangeLampPanelLayout);
         orangeLampPanelLayout.setHorizontalGroup(
                 orangeLampPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -584,10 +673,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        purpleLampBluePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout purpleLampPanelLayout = new javax.swing.GroupLayout(purpleLampBluePanel);
-        purpleLampBluePanel.setLayout(purpleLampPanelLayout);
+        javax.swing.GroupLayout purpleLampPanelLayout = new javax.swing.GroupLayout(purpleLampBlueLight);
+        purpleLampBlueLight.setLayout(purpleLampPanelLayout);
         purpleLampPanelLayout.setHorizontalGroup(
                 purpleLampPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -597,10 +684,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        blueLampPurplePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout blueLampPanelLayout = new javax.swing.GroupLayout(blueLampPurplePanel);
-        blueLampPurplePanel.setLayout(blueLampPanelLayout);
+        javax.swing.GroupLayout blueLampPanelLayout = new javax.swing.GroupLayout(blueLampPurpleLight);
+        blueLampPurpleLight.setLayout(blueLampPanelLayout);
         blueLampPanelLayout.setHorizontalGroup(
                 blueLampPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -770,10 +855,8 @@ public class MainFrame extends JFrame {
 
         elapsedTimeValueLabel.setText("0");
 
-        blueLampOrangePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout blueLampLeftPanelLayout = new javax.swing.GroupLayout(blueLampOrangePanel);
-        blueLampOrangePanel.setLayout(blueLampLeftPanelLayout);
+        javax.swing.GroupLayout blueLampLeftPanelLayout = new javax.swing.GroupLayout(blueLampOrangeLight);
+        blueLampOrangeLight.setLayout(blueLampLeftPanelLayout);
         blueLampLeftPanelLayout.setHorizontalGroup(
                 blueLampLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -783,10 +866,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        orangeLampBluePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout orangeLampRightPanelLayout = new javax.swing.GroupLayout(orangeLampBluePanel);
-        orangeLampBluePanel.setLayout(orangeLampRightPanelLayout);
+        javax.swing.GroupLayout orangeLampRightPanelLayout = new javax.swing.GroupLayout(orangeLampBlueLight);
+        orangeLampBlueLight.setLayout(orangeLampRightPanelLayout);
         orangeLampRightPanelLayout.setHorizontalGroup(
                 orangeLampRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -796,10 +877,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        blueLampRedPanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout blueLampRightPanelLayout = new javax.swing.GroupLayout(blueLampRedPanel);
-        blueLampRedPanel.setLayout(blueLampRightPanelLayout);
+        javax.swing.GroupLayout blueLampRightPanelLayout = new javax.swing.GroupLayout(blueLampRedLight);
+        blueLampRedLight.setLayout(blueLampRightPanelLayout);
         blueLampRightPanelLayout.setHorizontalGroup(
                 blueLampRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -809,10 +888,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        purpleLampRedPanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout purpleLampLeftPanelLayout = new javax.swing.GroupLayout(purpleLampRedPanel);
-        purpleLampRedPanel.setLayout(purpleLampLeftPanelLayout);
+        javax.swing.GroupLayout purpleLampLeftPanelLayout = new javax.swing.GroupLayout(purpleLampRedLight);
+        purpleLampRedLight.setLayout(purpleLampLeftPanelLayout);
         purpleLampLeftPanelLayout.setHorizontalGroup(
                 purpleLampLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -822,10 +899,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        orangeLampPurplePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout orangeLampLeftPanelLayout = new javax.swing.GroupLayout(orangeLampPurplePanel);
-        orangeLampPurplePanel.setLayout(orangeLampLeftPanelLayout);
+        javax.swing.GroupLayout orangeLampLeftPanelLayout = new javax.swing.GroupLayout(orangeLampPurpleLight);
+        orangeLampPurpleLight.setLayout(orangeLampLeftPanelLayout);
         orangeLampLeftPanelLayout.setHorizontalGroup(
                 orangeLampLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -835,10 +910,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        purpleLampOrangePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout purpleLampRightPanelLayout = new javax.swing.GroupLayout(purpleLampOrangePanel);
-        purpleLampOrangePanel.setLayout(purpleLampRightPanelLayout);
+        javax.swing.GroupLayout purpleLampRightPanelLayout = new javax.swing.GroupLayout(purpleLampOrangeLight);
+        purpleLampOrangeLight.setLayout(purpleLampRightPanelLayout);
         purpleLampRightPanelLayout.setHorizontalGroup(
                 purpleLampRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -848,10 +921,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        redLampPurplePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout redLampRightPanelLayout = new javax.swing.GroupLayout(redLampPurplePanel);
-        redLampPurplePanel.setLayout(redLampRightPanelLayout);
+        javax.swing.GroupLayout redLampRightPanelLayout = new javax.swing.GroupLayout(redLampPurpleLight);
+        redLampPurpleLight.setLayout(redLampRightPanelLayout);
         redLampRightPanelLayout.setHorizontalGroup(
                 redLampRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -861,10 +932,8 @@ public class MainFrame extends JFrame {
                         .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        redLampBluePanel.setBackground(Color.BLACK);
-
-        javax.swing.GroupLayout redLampLeftPanelLayout = new javax.swing.GroupLayout(redLampBluePanel);
-        redLampBluePanel.setLayout(redLampLeftPanelLayout);
+        javax.swing.GroupLayout redLampLeftPanelLayout = new javax.swing.GroupLayout(redLampBlueLight);
+        redLampBlueLight.setLayout(redLampLeftPanelLayout);
         redLampLeftPanelLayout.setHorizontalGroup(
                 redLampLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGap(0, 40, Short.MAX_VALUE)
@@ -904,9 +973,9 @@ public class MainFrame extends JFrame {
                                                 .addComponent(orangeInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, Short.MAX_VALUE)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(orangeLampBluePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(orangeLampPurplePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(orangeLampRedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                        .addComponent(orangeLampBlueLight, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(orangeLampPurpleLight, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(orangeLampRedLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
@@ -917,21 +986,21 @@ public class MainFrame extends JFrame {
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addComponent(purpleInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(purpleLampOrangePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(purpleLampOrangeLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(purpleLampBluePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(purpleLampBlueLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(purpleLampRedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                                .addComponent(purpleLampRedLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                 .addGroup(layout.createSequentialGroup()
                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                                 .addComponent(blueInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addGroup(layout.createSequentialGroup()
-                                                                        .addComponent(blueLampOrangePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(blueLampOrangeLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(blueLampPurplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(blueLampPurpleLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(blueLampRedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                        .addComponent(blueLampRedLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                         .addGap(18, 18, 18)
                                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                 .addComponent(blueRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -941,9 +1010,9 @@ public class MainFrame extends JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(redLampOrangePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(redLampPurplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(redLampBluePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(redLampOrangeLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(redLampPurpleLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(redLampBlueLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addGap(45, 45, 45)
                                                 .addComponent(redInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addComponent(redNewVehicleButton, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
@@ -980,11 +1049,11 @@ public class MainFrame extends JFrame {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                                .addComponent(orangeLampPurplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(orangeLampPurpleLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(orangeLampRedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(orangeLampRedLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(orangeLampBluePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addComponent(orangeLampBlueLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                         .addComponent(orangeInfoPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(orangeRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1004,15 +1073,15 @@ public class MainFrame extends JFrame {
                                                                                 .addComponent(greenDurationSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(purpleLampOrangePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(purpleLampBluePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(purpleLampRedPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                        .addComponent(purpleLampOrangeLight, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(purpleLampBlueLight, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(purpleLampRedLight, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                                 .addGap(0, 0, Short.MAX_VALUE)
                                                                 .addComponent(purpleNewVehicleButton)
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addComponent(purpleRoad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGap(18, 18, 18)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                         .addComponent(junctionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
                                                         .addGroup(layout.createSequentialGroup()
@@ -1023,18 +1092,18 @@ public class MainFrame extends JFrame {
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                                         .addComponent(redInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                         .addGroup(layout.createSequentialGroup()
-                                                                                .addComponent(redLampPurplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addComponent(redLampPurpleLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(redLampOrangePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addComponent(redLampOrangeLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(redLampBluePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                                                                .addComponent(redLampBlueLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(blueLampRedPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(blueLampPurplePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(blueLampOrangePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(blueLampRedLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(blueLampPurpleLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(blueLampOrangeLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                                                 .addComponent(blueInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(layout.createSequentialGroup()
@@ -1049,14 +1118,24 @@ public class MainFrame extends JFrame {
 
 
     // Variables declaration
+    BufferedImage redCar;
+    BufferedImage blueCar;
+    BufferedImage orangeCar;
+    BufferedImage purpleCar;
+
+    enum LightDirection{
+        RED, BLUE, YELLOW, REDYELLOW, GREENRIGHT, GREENLEFT, GREENDOWN, GREENUP, BLACK
+    }
+
+    private EnumMap<LightDirection, BufferedImage> lightImages;
 
     private javax.swing.JLabel blueCarSumValueLabel;
 
     private javax.swing.JLabel blueDelayValueLabel;
 
-    private javax.swing.JPanel blueLampOrangePanel;
-    private javax.swing.JPanel blueLampPurplePanel;
-    private javax.swing.JPanel blueLampRedPanel;
+    private JLight blueLampOrangeLight;
+    private JLight blueLampPurpleLight;
+    private JLight blueLampRedLight;
 
     private JRoad blueRoad;
 
@@ -1069,9 +1148,9 @@ public class MainFrame extends JFrame {
 
     private javax.swing.JLabel orangeDelayValueLabel;
 
-    private javax.swing.JPanel orangeLampPurplePanel;
-    private javax.swing.JPanel orangeLampRedPanel;
-    private javax.swing.JPanel orangeLampBluePanel;
+    private JLight orangeLampPurpleLight;
+    private JLight orangeLampRedLight;
+    private JLight orangeLampBlueLight;
 
     private JRoad orangeRoad;
 
@@ -1079,9 +1158,9 @@ public class MainFrame extends JFrame {
 
     private javax.swing.JLabel purpleDelayValueLabel;
 
-    private javax.swing.JPanel purpleLampRedPanel;
-    private javax.swing.JPanel purpleLampBluePanel;
-    private javax.swing.JPanel purpleLampOrangePanel;
+    private JLight purpleLampRedLight;
+    private JLight purpleLampBlueLight;
+    private JLight purpleLampOrangeLight;
 
     private JRoad purpleRoad;
 
@@ -1089,9 +1168,9 @@ public class MainFrame extends JFrame {
 
     private javax.swing.JLabel redDelayValueLabel;
 
-    private javax.swing.JPanel redLampBluePanel;
-    private javax.swing.JPanel redLampOrangePanel;
-    private javax.swing.JPanel redLampPurplePanel;
+    private JLight redLampBlueLight;
+    private JLight redLampOrangeLight;
+    private JLight redLampPurpleLight;
 
     private JRoad redRoad;
 
