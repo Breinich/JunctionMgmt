@@ -21,7 +21,9 @@ public class JJunction extends JPanel{
      */
     public JJunction() {
         super(true);
-        this.setPreferredSize(new Dimension(260, 260));
+
+        this.setBackground(Color.GREEN);
+        this.setSize(260, 260);
 
         this.path = "src/env/main/junctionframework/images/intersection.png";
 
