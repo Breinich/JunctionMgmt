@@ -65,7 +65,6 @@ public class MainFrame extends JFrame {
         for(int i = 0; i < numberOfVehicles; i++){
             road.addNewCoordinate(getCoordinateOfCar(direction, i));
         }
-
         revalidate();
         repaint();
     }
