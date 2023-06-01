@@ -1,6 +1,5 @@
 package main.world;
 
-import java.awt.*;
 import java.util.EnumMap;
 import java.util.LinkedList;
 
@@ -105,14 +104,8 @@ public class TrafficLight {
 		return actualColors.get(dir);
 	}
 
-	public Color getColor(Direction dir) {
-		return switch (actualColors.get(dir)) {
-			case GREEN -> Color.GREEN;
-			case YELLOW -> Color.YELLOW;
-			case REDYELLOW -> Color.ORANGE;
-			case RED -> Color.RED;
-			default -> Color.BLACK;
-		};
+	public LightColor getColor(Direction dir) {
+		return actualColors.get(dir);
 	}
 
 	public void addVehicle(Vehicle v) {
