@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -30,34 +31,41 @@ public class MainFrame extends JFrame {
         };
     }
 
+    public Coordinate getCoordinateOfCar(Direction direction, int idxInWaitList)
+    {
+        int x = 0;
+        int y = 0;
+
+        switch (direction){
+            case RED -> {
+                x = 0 + idxInWaitList * 50;
+                y = 25;
+            }
+            case BLUE -> {
+                x = 25;
+                y = 0 + idxInWaitList * 50;
+            }
+            case ORANGE -> {
+                x = 117 - idxInWaitList * 50;
+                y = 25;
+            }
+            case PURPLE -> {
+                x = 25;
+                y = 138 - idxInWaitList * 50-50;
+            }
+        }
+
+        return new Coordinate(x, y);
+    }
+
     private void calculateRoadCoordinates(JRoad road, Direction direction){
         int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
         road.removeAllCoordinate();
 
-        int x = 0;
-        int y = 0;
-
-            for(int i = 0; i < numberOfVehicles; i++){
-                switch (direction){
-                    case RED -> {
-                        x = 0+i*50;
-                        y = 25;
-                    }
-                    case BLUE -> {
-                        x = 25;
-                        y = 0+i*50;
-                    }
-                    case ORANGE -> {
-                        x = 117-i*50;
-                        y = 25;
-                    }
-                    case PURPLE -> {
-                        x = 25;
-                        y = 138-i*50-50;
-                    }
-                }
-                road.addNewCoordinate(new Coordinate(x, y));
-            }
+        for(int i = 0; i < numberOfVehicles; i++){
+            road.addNewCoordinate(getCoordinateOfCar(direction, i));
+        }
+        
         revalidate();
         repaint();
     }
@@ -239,9 +247,14 @@ public class MainFrame extends JFrame {
 
                     Coordinate coord;
 
+                    List<Direction> activeDirections = new ArrayList<Direction>();
+
                     for(Vehicle v : movingVehicles){
                         switch(v.getFrom()){
                             case RED -> {
+                                if(!activeDirections.contains(Direction.RED)) {
+                                    activeDirections.add(Direction.RED);
+                                }
                                 switch(v.getDestionation()){
                                     case BLUE -> {
 
@@ -271,6 +284,9 @@ public class MainFrame extends JFrame {
                                 }
                             }
                             case BLUE -> {
+                                if(!activeDirections.contains(Direction.BLUE)) {
+                                    activeDirections.add(Direction.BLUE);
+                                }
                                 switch(v.getDestionation()){
                                     case RED -> {
                                         if(i <= n/2) {
@@ -299,6 +315,9 @@ public class MainFrame extends JFrame {
                                 }
                             }
                             case ORANGE -> {
+                                if(!activeDirections.contains(Direction.ORANGE)) {
+                                    activeDirections.add(Direction.ORANGE);
+                                }
                                 switch(v.getDestionation()){
                                     case BLUE -> {
                                         if(i <= n/2) {
@@ -327,6 +346,9 @@ public class MainFrame extends JFrame {
                                 }
                             }
                             case PURPLE -> {
+                                if(!activeDirections.contains(Direction.PURPLE)) {
+                                    activeDirections.add(Direction.PURPLE);
+                                }
                                 switch(v.getDestionation()){
                                     case BLUE -> {
                                         coord = new Coordinate(40, Math.round( i / (n - 1.0f) * 210));
@@ -359,55 +381,33 @@ public class MainFrame extends JFrame {
 
 
                     for (Direction direction : Direction.values()) {
-                        int x2 = 0;
-                        int y2 = 0;
-                        int x3 = 0;
-                        int y3 = 0;
-                        switch (direction){
-                            case RED -> {
-                                x2= 50-i*(50/n);
-                                y2= 25;
-                                x3 =100-i*(50/n);
-                                y3 = 25;
-                            }
-                            case BLUE -> {
-                                x2= 25;
-                                y2= 0-i*(50/n);
-                                x3 =25;
-                                y3 = 50-i*(50/n);
-                            }
-                            case ORANGE -> {
-                                x2= (117-50)+i*(50/n);
-                                y2= 25;
-                                x3 =(117-2*50)+i*(50/n);
-                                y3 = 25;
+                        if(activeDirections.contains(direction)) {
 
-                            }
-                            case PURPLE -> {
-                                y2 = (138-50)+i*(50/n);
-                                x2 = 25;
-                                y3 = (88-50)+i*(50/n);
-                                x3 = 25;
-                            }
-                        }
-                        int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
+                            int numberOfVehicles = JunctionFramework.getSimulator().getTrafficLight(direction).getWaitingVehiclesCount();
 
-                        if(numberOfVehicles == 2 ) {
                             getJRoad(direction).removeAllCoordinate();
-                            getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
-                        } else if(numberOfVehicles > 2){
-                            getJRoad(direction).removeAllCoordinate();
-                            getJRoad(direction).addNewCoordinate(new Coordinate(x2, y2));
-                            getJRoad(direction).addNewCoordinate(new Coordinate(x3, y3));
+                            for (int idx = 0; idx < numberOfVehicles; idx++)
+                            {
+                                Coordinate original = getCoordinateOfCar(direction, idx + 1);
+                                Coordinate goal = getCoordinateOfCar(direction, idx);
+                                int x = 0;
+                                int y = 0;
+                                switch (direction) {
+                                    case RED, ORANGE -> {
+                                        x = original.x() - ((original.x() - goal.x()) / n) * i;
+                                        y = original.y();
+                                    }
+                                    case BLUE, PURPLE -> {
+                                        x = original.x();
+                                        y = original.y() - ((original.y() - goal.y()) / n) * i;
+                                    }
+                                }
+                                getJRoad(direction).addNewCoordinate(new Coordinate(x, y));
+                            }
 
+                            getJRoad(direction).repaint();
+                            getJRoad(direction).revalidate();
                         }
-
-                        if (numberOfVehicles > 3){
-                            calculateRoadCoordinates(getJRoad(direction), direction);
-                        }
-
-                        getJRoad(direction).repaint();
-                        getJRoad(direction).revalidate();
                     }
 
 
