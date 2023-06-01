@@ -41,6 +41,7 @@ public class JRoad extends JPanel {
         for (Coordinate vehicle : vehiclesCoordinates) {
             g.drawImage(image, vehicle.x(), vehicle.y(), null);
         }
+
     }
 
 }
