@@ -142,8 +142,9 @@ public class MainFrame extends JFrame {
         return lightImages.get(LightDirection.BLACK);
     }
 
+
     public void refresh() {
-        //TODO update lamps
+        //update lamps
         for(Direction from : Direction.values()){
             for(Direction to : Direction.values()){
                 if(from != to){
