@@ -17,10 +17,11 @@ waitingCount(0).
     -waitingCount(Y);
     +waitingCount(Y1);
     .abolish(newBid(_,_));
-    .print("waiting sum is: ",X1," and waiting count is: ",Y1);
+    .print("New bid -> waiting sum is: ",X1," and waiting count is: ",Y1);
     !placeBid.
 
 +newBid(X1, Y1) : waitingSum(X) & waitingCount(Y) & (X1 == X) & (Y1 == Y) <-
+    .print("Bid already exists -> waiting sum is: ",X1," and waiting count is: ",Y1);
     .abolish(newBid(_,_)).
 
 +!placeBid : waitingSum(X) & waitingCount(Y) <-

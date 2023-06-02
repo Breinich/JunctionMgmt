@@ -129,7 +129,7 @@ public class Env extends Environment {
      * Notifies the agent that a new vehicle has arrived
      * @param direction The direction of the traffic light
      */
-    public void notifyAgentNewBid(Direction direction, int weight, int count){
+    public void notifyAgentNewBid(Direction direction, long weight, int count){
         addPercept(agentNames.get(direction),Literal.parseLiteral("newBid").addTerms(new NumberTermImpl(weight), new NumberTermImpl(count)));
         informAgsEnvironmentChanged(agentNames.get(direction));
     }

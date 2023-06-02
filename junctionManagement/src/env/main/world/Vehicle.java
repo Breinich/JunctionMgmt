@@ -1,7 +1,7 @@
 package main.world;
 
 public class Vehicle {
-	private int weight;
+	private long weight;
 	private int waitingTime;
 	private final Direction from;
 	private final Direction to;
@@ -21,7 +21,7 @@ public class Vehicle {
 		return waitingTime;
 	}
 
-	public int getWeight(){
+	public long getWeight(){
 		return weight;
 	}
 

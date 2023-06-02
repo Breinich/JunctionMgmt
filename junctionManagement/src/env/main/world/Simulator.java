@@ -12,7 +12,7 @@ public class Simulator {
 	
 	EnumMap<Direction, TrafficLight> trafficLights;
 	EnumMap<Direction, Integer> carSumByDirection;
-	EnumMap<Direction, Integer> carAvgWaitingByDirection;
+	EnumMap<Direction, Double> carAvgWaitingByDirection;
 	ArrayList<Vehicle> actualMovingVehicles;
 	Random random;
 	
@@ -41,7 +41,7 @@ public class Simulator {
 
 		carAvgWaitingByDirection = new EnumMap<>(Direction.class);
 		for (Direction d : Direction.values())
-			carAvgWaitingByDirection.put(d, 0);
+			carAvgWaitingByDirection.put(d, 0.0);
 
 		actualMovingVehicles = new ArrayList<>();
 
@@ -74,9 +74,10 @@ public class Simulator {
 			}
 		}
 
-        JunctionFramework.refresh();
 		for(Direction d : Direction.values())
 			JunctionFramework.getEnvironment().notifyAgentNewBid(d, trafficLights.get(d).getWaitingVehiclesWeight(), trafficLights.get(d).getWaitingVehiclesCount());
+
+		JunctionFramework.refresh();
 	}
 
 	/**
@@ -110,7 +111,7 @@ public class Simulator {
 
 		carSumByDirection.put(direction, carSumByDirection.get(direction) + 1);
 		carAvgWaitingByDirection.put(direction,
-				(carAvgWaitingByDirection.get(direction)*(carSumByDirection.get(direction)-1) + waitingTime)/
+				(carAvgWaitingByDirection.get(direction)*(carSumByDirection.get(direction)-1) + waitingTime)*1.0/
 						carSumByDirection.get(direction));
 
 		JunctionFramework.log("Vehicle left from " + direction + " direction");
@@ -144,7 +145,7 @@ public class Simulator {
 		new Thread(timeStepper).start();
 	}
 
-	public Integer getAvgWaitingByDirection(Direction d) {
+	public double getAvgWaitingByDirection(Direction d) {
 		return carAvgWaitingByDirection.get(d);
 	}
 

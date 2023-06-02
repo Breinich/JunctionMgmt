@@ -162,13 +162,13 @@ public class MainFrame extends JFrame {
 
 		//calculate the values
         redCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.RED).toString());
-        redDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.RED).toString());
+        redDelayValueLabel.setText(String.format("%.2f",JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.RED)));
         blueCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.BLUE).toString());
-        blueDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.BLUE).toString());
+        blueDelayValueLabel.setText(String.format("%.2f",JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.BLUE)));
         orangeCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.ORANGE).toString());
-        orangeDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.ORANGE).toString());
+        orangeDelayValueLabel.setText(String.format("%.2f",JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.ORANGE)));
         purpleCarSumValueLabel.setText(JunctionFramework.getSimulator().getCarSumByDirection(Direction.PURPLE).toString());
-        purpleDelayValueLabel.setText(JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.PURPLE).toString());
+        purpleDelayValueLabel.setText(String.format("%.2f",JunctionFramework.getSimulator().getAvgWaitingByDirection(Direction.PURPLE)));
 
         elapsedTimeValueLabel.setText(JunctionFramework.getSimulator().getTime().toString());
 

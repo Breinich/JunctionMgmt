@@ -112,11 +112,11 @@ public class TrafficLight {
 		vehicles.add(v);
 	}
 
-	public int getWaitingVehiclesWeight() {
+	public long getWaitingVehiclesWeight() {
 		if(vehicles.isEmpty())
 			return 0;
 
-		int sum = 0;
+		long sum = 0;
 		for(Vehicle v : vehicles) {
 			sum += v.getWeight();
 		}
@@ -131,6 +131,8 @@ public class TrafficLight {
 	}
 
 	public int getWaitingVehiclesCount() {
+		if(vehicles.isEmpty())
+			return 0;
 		return vehicles.size();
 	}
 }
