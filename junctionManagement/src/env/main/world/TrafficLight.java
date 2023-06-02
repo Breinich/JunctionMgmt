@@ -100,10 +100,6 @@ public class TrafficLight {
 		futureColors.put(dir, c);
 	}
 
-	public LightColor getLightColor(Direction dir) {
-		return actualColors.get(dir);
-	}
-
 	public LightColor getColor(Direction dir) {
 		return actualColors.get(dir);
 	}

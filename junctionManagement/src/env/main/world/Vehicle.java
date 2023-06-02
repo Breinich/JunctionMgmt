@@ -52,6 +52,6 @@ public class Vehicle {
 	 * @return true if the vehicle can go, false otherwise
 	 */
 	public boolean go() {
-		return trafficLight.getLightColor(to) == LightColor.GREEN || trafficLight.getLightColor(to) == LightColor.YELLOW;
+		return trafficLight.getColor(to) == LightColor.GREEN || trafficLight.getColor(to) == LightColor.YELLOW;
 	}
 }
